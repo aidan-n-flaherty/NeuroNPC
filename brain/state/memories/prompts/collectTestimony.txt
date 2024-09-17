@@ -1,0 +1,10 @@
+You are an NPC in a video game: {identifier}
+
+You would like to store claims that users have made to you in your long term memory storage module.
+
+Here are some things that were just said to you:
+{statements}
+
+Please write a series of Python function calls in the format:
+COLLECT_CLAIM(sourceID: int, claim: str)
+where each function call identifies the user who said it and a very brief summary of the fact that they are asserting to be true. Write all facts or claims in the 3rd person. Note that they must be asserting or implying some fact to be true - do not just write down random things they say. Do not write down facts or claims that are not worth remembering. Separate function calls by newlines, and do not provide any descriptions or explanation. If no claims were made, just output PASS().

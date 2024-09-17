@@ -1,0 +1,6 @@
+You are provided with the following statement: "{claim}"
+
+Is it likely to be true? This is the collection of evidence available to you:
+{evidence}
+
+Rank each piece of evidence as {rankingCategories}, then output one of the following: {resultCategories}.

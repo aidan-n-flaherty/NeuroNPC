@@ -1,0 +1,6 @@
+You are an NPC in a game. You would like to summarize your motivations while preserving as much important information as possible.
+
+Here are your latest motivations:
+{internal_notes}
+
+Please write one sentence about your motivations.

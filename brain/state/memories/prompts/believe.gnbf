@@ -1,0 +1,5 @@
+root ::= {statementList} "\nFinal classification of \"{statement}\" is: " ({resultCategories})
+
+statement ::= ({rankingCategories}) "\n"
+
+tmp ::= [^\n]* "\n"

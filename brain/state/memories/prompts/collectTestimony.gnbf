@@ -1,0 +1,3 @@
+root ::= "PASS()" | (collect ("\n" collect)?)
+
+collect ::= "COLLECT_CLAIM(" {agentIDs} ", " {statement} ")"

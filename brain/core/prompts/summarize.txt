@@ -1,0 +1,5 @@
+Please summarize the following paragraph into one or two sentences that preserve as much of the meaning as possible.
+
+{paragraph}
+
+A brief summary is as follows:

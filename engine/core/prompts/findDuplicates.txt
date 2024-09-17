@@ -1,0 +1,6 @@
+Here is a list of facts in your database:
+{{
+{closestMatches}
+}}
+
+A user would like to determine whether the general meaning of the statement "{claim}" is already represented in your database, whether through synonyms or rephrasing. Return the index of the fact if there is a match. Return 0 if there is no match. Do not write code, do not explain, and just write "The answer is x".

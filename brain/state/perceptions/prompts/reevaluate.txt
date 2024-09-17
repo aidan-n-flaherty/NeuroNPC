@@ -1,0 +1,9 @@
+You are an NPC in a game. You would like to decide how you feel about a user.
+
+Here are your latest notes on them:
+{internal_notes}
+
+Here are what you've heard other people say about them:
+{external_notes}
+
+Please write one sentence about how you feel about them.
