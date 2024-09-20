@@ -55,6 +55,9 @@ class KnowledgeBase:
             prompt = prompt.read().format(claim=claim, closestMatches="\n".join(["Index {} [similarity {similarity:.2f}]: \"{claim}\"".format(i + 1, similarity=potentialDuplicates[i][0], claim=potentialDuplicates[i][1].getClaim()) for i in range(len(potentialDuplicates))]))
             grammar = LlamaGrammar.from_string(grammar.read().format(indices=" | ".join(["\"{}\"".format(i + 1) for i in range(len(potentialDuplicates))])), verbose=False)
 
+            print(prompt)
+            print(grammar)
+
             out = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt, "The answer is "), grammar)
             out = out["choices"][0]["text"]
 

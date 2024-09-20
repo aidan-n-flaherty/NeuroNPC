@@ -53,9 +53,9 @@ class NPC(Agent):
             else:
                 responseArr = self.recalculate(world)
         
-        returnArr = [action for action in responseArr]
-
         if responseArr:
+            returnArr = [action for action in responseArr]
+
             for response in responseArr:
                 responseDescription = response.getDescription(world, self.getID())
                 selfDescription = response.getSelfDescription(world, self.getID())
@@ -68,7 +68,9 @@ class NPC(Agent):
                     self._locationID = response.getParameter(0)
                     returnArr += self.react(world, None, None, timestamp, description, embedding)
 
-        return returnArr
+            return returnArr
+        
+        return []
     
     def processSelf(self, world: World, agent: Agent, action: Action, timestamp: int, description: str, embedding) -> list[Action]:
         if action.getName() == "RAISE_EMOTION":
@@ -79,6 +81,11 @@ class NPC(Agent):
             self._perceptionModule.addNote(time.time(), action.getParameter(0), action.getParameter(1))
         elif action.getName() == "COLLECT_CLAIM":
             self._memoryModule.addEvidence(Evidence(timestamp, action.getParameter(0), action.getParameter(1)))
+        elif action.getName() == "CHECK_CLAIM":
+            response = Action("NONE", [self._memoryModule.check(world.getKnowledgeBase(), self._perceptionModule, action.getParameter(0), self._reactionModule.getConversingWith())], "You evaluate the statement as: {0}.", "You evaluate the statement as: {0}.")
+            description = response.getDescription(world, self.getID())
+            embedding = Generator.encode(Formatter.removeStopWords(description))
+            return self.react(world, None, response, timestamp, description, embedding)
         elif action.getName() == "QUERY_MEMORY_DATABASE":
             response = Action("NONE", [self._memoryModule.query(self, action.getParameter(0))], "From your memories: {0}.", "From your memories: {0}.")
             description = response.getDescription(world, self.getID())

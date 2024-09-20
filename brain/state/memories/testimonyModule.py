@@ -59,6 +59,9 @@ class TestimonyModule:
                 return matches[int(out) - 1][1]
     
     def believabilityScore(self, perceptionModule, assertion):
+        if assertion.getDegree() == 1:
+            return 1
+
         perception = perceptionModule.getPerception(assertion.getSourceID())
 
         trustworthiness = perception.getTrustworthiness() if perception else 1

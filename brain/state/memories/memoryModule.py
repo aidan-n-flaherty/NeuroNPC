@@ -12,6 +12,7 @@ import LLM.formatter.parser as Parser
 from engine.types.statement import Statement
 from engine.types.paragraph import Paragraph
 import brain.constants.constants as Constants
+import time
 from llama_cpp import LlamaGrammar
 
 class MemoryModule:
@@ -45,13 +46,9 @@ class MemoryModule:
             characters += memory.getDescription()
         
         if Generator.tokenCount(characters) > Constants.HISTORY_LIMIT:
-            self._summarizedMemoryModule.addMemory(SummarizedMemory(agent, self._summarizedMemoryModule.mostRecentMemory(), self._observedMemoryModule))
-            
-            offloaded = self._observedMemoryModule.offload()
-            statements = list(filter(lambda memory: memory.getAction().getName() == "SAY" and memory.getAgentID() != agent.getID(), offloaded))
-            
+            statements = self._observedMemoryModule.getShortTermMemories()
             with open('brain/state/memories/prompts/collectTestimony.txt', 'r') as prompt, open('brain/state/memories/prompts/collectTestimony.gnbf', 'r') as grammar:
-                prompt = prompt.read().format(identifier=agent.getIdentifier(), statements="\n".join(['- Agent {} said "{}"'.format(memory.getAgentID(), memory.getAction().getParameter(0)) for memory in statements]))
+                prompt = prompt.read().format(identifier=agent.getIdentifier(), backstory=agent.getBackstory(), history=Formatter.formatHistory(agent.getID(), self._summarizedMemoryModule.mostRecentMemory(), self._observedMemoryModule), narrator=Formatter.getNarratorName(), model=Formatter.getModelName())
                 grammar = grammar.read().format(agentIDs='({})'.format(' | '.join(['"{}"'.format(memory.getAgentID()) for memory in statements])), statement=Paragraph.getGrammar())
                 print(prompt)
                 print(grammar)
@@ -60,10 +57,16 @@ class MemoryModule:
                 for action in Parser.parseFunctionList(result["choices"][0]["text"]):
                     if action.getName() == "PASS":
                         break
-                    
-                    self.addTestimony(knowledgeBase, action.getParameter(1), action.getParameter(0), 1)
+                    elif action.getName() == "COLLECT_CLAIM":
+                        self.addTestimony(knowledgeBase, action.getParameter(1), action.getParameter(0), 1)
+                    elif action.getName() == "COLLECT_EVIDENCE":
+                        self.addEvidence(Evidence(time.time(), agent.getID(), action.getParameter(0)))
                 
                 print(self._testimonyModule._testimonyArr)
+            
+            self._summarizedMemoryModule.addMemory(SummarizedMemory(agent, self._summarizedMemoryModule.mostRecentMemory(), self._observedMemoryModule))
+            offloaded = self._observedMemoryModule.offload()
+            statements = list(filter(lambda memory: memory.getAction().getName() == "SAY" and memory.getAgentID() != agent.getID(), offloaded))
     
     def query(self, agent, query: str) -> str:
         queryEmbedding = Generator.encode(Formatter.removeStopWords(query))
@@ -83,3 +86,8 @@ class MemoryModule:
             print(result)
 
             return result["choices"][0]["text"]
+
+    def check(self, knowledgeBase, perceptionModule, claim: str, sourceID: int) -> str:
+        assertion = knowledgeBase.getClaim(claim, sourceID, 2).getID()
+
+        return self._testimonyModule.believability(knowledgeBase, perceptionModule, assertion)

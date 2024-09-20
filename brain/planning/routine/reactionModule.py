@@ -21,6 +21,9 @@ class ReactionModule:
     def endConversation(self):
         self._conversingWith = None
     
+    def getConversingWith(self):
+        return self._conversingWith
+    
     def addReaction(self, agent: Agent, action: Action, response: Action) -> None:
         for actionResponse in self._actionResponses:
             if actionResponse.getAction() == action:
