@@ -1,2 +1,3 @@
 LLM/modelCurrent/*.gguf
 LLM/models/*.gguf
+.venv
