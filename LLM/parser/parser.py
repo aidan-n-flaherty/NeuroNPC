@@ -4,6 +4,7 @@ from typing import cast
 from enum import Enum
 
 from engine.actions.action import Action
+from engine.actions.actionType import ActionType
 import engine.actions.actionManager as ActionManager
 
 # expects a string in the format:
@@ -32,14 +33,14 @@ def parseFunctionCall(functionCallStr: str) -> Action:
     
     functionName = functionCallStr[0:splitIndex]
 
-    if not ActionManager.validAction(functionName):
+    if not ActionManager.validAction(ActionType(functionName)):
         return None
 
     print(functionCallStr)
     print(functionCallStr[splitIndex:])
-    functionArgs = parse_array(functionCallStr[splitIndex:], ActionManager.getParameterTypes(functionName))
+    functionArgs = parse_array(functionCallStr[splitIndex:], ActionManager.getParameterTypes(ActionType(functionName)))
 
-    return Action(functionName, functionArgs, functionCallStr, ActionManager.getDescription(functionName))
+    return Action(functionName, functionArgs, functionCallStr, ActionManager.getDescription(ActionType(functionName)))
 
 def is_array(argStr: str):
     if not argStr:

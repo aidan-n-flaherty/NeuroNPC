@@ -8,9 +8,10 @@ from brain.state.memories.evidence import Evidence
 import engine.actions.actionManager as ActionManager
 import LLM.generator.generator as Generator
 import LLM.formatter.formatter as Formatter
-import LLM.formatter.parser as Parser
+import LLM.parser.parser as Parser
 from engine.types.statement import Statement
 from engine.types.paragraph import Paragraph
+from engine.actions.actionType import ActionType
 import brain.constants.constants as Constants
 import time
 from llama_cpp import LlamaGrammar
@@ -34,8 +35,8 @@ class MemoryModule:
     def addEvidence(self, evidence: Evidence):
         self._evidenceModule.addEvidence(evidence)
     
-    def addTestimony(self, knowledgeBase, claim: str, sourceID: int, degree: int):
-        self._testimonyModule.addClaim(knowledgeBase, claim, sourceID, degree)
+    def addTestimony(self, knowledgeBase, claim: str, sourceID: int, degree: int) -> int:
+        return self._testimonyModule.addClaim(knowledgeBase, claim, sourceID, degree)
 
     def addMemory(self, agent, knowledgeBase, memory: ObservedMemory, perceptionModule):
         self._observedMemoryModule.addMemory(memory, perceptionModule)
@@ -46,7 +47,7 @@ class MemoryModule:
             characters += memory.getDescription()
         
         if Generator.tokenCount(characters) > Constants.HISTORY_LIMIT:
-            statements = self._observedMemoryModule.getShortTermMemories()
+            """statements = self._observedMemoryModule.getShortTermMemories()
             with open('brain/state/memories/prompts/collectTestimony.txt', 'r') as prompt, open('brain/state/memories/prompts/collectTestimony.gnbf', 'r') as grammar:
                 prompt = prompt.read().format(identifier=agent.getIdentifier(), backstory=agent.getBackstory(), history=Formatter.formatHistory(agent.getID(), self._summarizedMemoryModule.mostRecentMemory(), self._observedMemoryModule), narrator=Formatter.getNarratorName(), model=Formatter.getModelName())
                 grammar = grammar.read().format(agentIDs='({})'.format(' | '.join(['"{}"'.format(memory.getAgentID()) for memory in statements])), statement=Paragraph.getGrammar())
@@ -55,25 +56,36 @@ class MemoryModule:
                 result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt), grammar=LlamaGrammar.from_string(grammar, verbose=False))
 
                 for action in Parser.parseFunctionList(result["choices"][0]["text"]):
-                    if action.getName() == "PASS":
+                    if action.getType() == ActionType("pass"):
                         break
-                    elif action.getName() == "COLLECT_CLAIM":
+                    elif action.getType() == ActionType("collect_claim"):
                         self.addTestimony(knowledgeBase, action.getParameter(1), action.getParameter(0), 1)
-                    elif action.getName() == "COLLECT_EVIDENCE":
+                    elif action.getType() == ActionType("collect_evidence"):
                         self.addEvidence(Evidence(time.time(), agent.getID(), action.getParameter(0)))
                 
-                print(self._testimonyModule._testimonyArr)
+                print(self._testimonyModule._testimonyArr)"""
             
             self._summarizedMemoryModule.addMemory(SummarizedMemory(agent, self._summarizedMemoryModule.mostRecentMemory(), self._observedMemoryModule))
             offloaded = self._observedMemoryModule.offload()
-            statements = list(filter(lambda memory: memory.getAction().getName() == "SAY" and memory.getAgentID() != agent.getID(), offloaded))
+            #statements = list(filter(lambda memory: memory.getAction().getType() == "SAY" and memory.getAgentID() != agent.getID(), offloaded))
     
+    def extract(self, world) -> str:
+        observedMemories = [memory for memory in self._observedMemoryModule.getAllMemories() if memory.getAction().getType() == ActionType("say")][-3:]
+
+        with open('brain/state/memories/prompts/extract.txt', 'r') as prompt:
+            prompt = prompt.read().format(conversation="\n".join(['{}: {}'.format(world.getAgent(memory.getAgentID()).getIdentifier(), memory.getAction().getParameter(0)) for memory in observedMemories]), claim=observedMemories[-1].getAction().getParameter(0))
+            result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt))
+            print(prompt)
+            print(result["choices"][0]["text"])
+
+            return result["choices"][0]["text"]
+        
     def query(self, agent, query: str) -> str:
         queryEmbedding = Generator.encode(Formatter.removeStopWords(query))
 
         topSummarizedMemories = sorted(self._summarizedMemoryModule.getAllMemories(), key=lambda elem: Generator.encodedSimilarity(elem.getEmbedding(), queryEmbedding))[-3:]
 
-        topObservedMemories = sorted([memory for memory in self._observedMemoryModule.getAllMemories() if memory.getAction().getName() not in ActionManager.getMentalActionNames()], key=lambda elem: Generator.encodedSimilarity(elem.getEmbedding(), queryEmbedding))[-3:]
+        topObservedMemories = sorted([memory for memory in self._observedMemoryModule.getLongTermMemories() if memory.getAction().getType() not in ActionManager.getMentalActions()], key=lambda elem: Generator.encodedSimilarity(elem.getEmbedding(), queryEmbedding))[-3:]
 
         topEvidence = sorted(self._evidenceModule.getEvidence(), key=lambda elem: Generator.encodedSimilarity(elem.getEmbedding(), queryEmbedding))[-3:]
 
@@ -88,6 +100,6 @@ class MemoryModule:
             return result["choices"][0]["text"]
 
     def check(self, knowledgeBase, perceptionModule, claim: str, sourceID: int) -> str:
-        assertion = knowledgeBase.getClaim(claim, sourceID, 2).getID()
+        assertion = knowledgeBase.getClaim(claim, sourceID, 2)
 
         return self._testimonyModule.believability(knowledgeBase, perceptionModule, assertion)

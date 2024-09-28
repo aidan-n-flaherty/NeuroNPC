@@ -27,7 +27,7 @@ class ReactionModule:
     def addReaction(self, agent: Agent, action: Action, response: Action) -> None:
         for actionResponse in self._actionResponses:
             if actionResponse.getAction() == action:
-                actionResponse.update(agent, action, response)
+                actionResponse.update(agent, action.getType(), response)
                 
                 return
         

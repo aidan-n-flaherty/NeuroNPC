@@ -12,7 +12,7 @@ class Perception:
         self._externalNotes = []
         self._trustworthiness = Degree.NEUTRAL
 
-    def getTrustworthiness(self):
+    def getTrustworthiness(self) -> Degree:
         return self._trustworthiness
 
     def update(self, timestamp: int, note: str) -> None:
