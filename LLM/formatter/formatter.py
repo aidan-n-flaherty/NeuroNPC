@@ -3,7 +3,10 @@ from brain.state.memories.observedMemory import ObservedMemory
 import time
 import re
 import nltk
+<<<<<<< HEAD
 nltk.download('stopwords')
+=======
+>>>>>>> main
 nltk.download('maxent_ne_chunker')
 nltk.download('words')
 
@@ -11,8 +14,11 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk import ne_chunk, pos_tag, word_tokenize
 from nltk.tree import Tree
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> main
 
 stop_words = set(stopwords.words('english'))
 

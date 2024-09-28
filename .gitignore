@@ -2,4 +2,8 @@ LLM/modelCurrent/*.gguf
 LLM/models/*.gguf
 **/__pycache__/
 *.DS_Store
+<<<<<<< HEAD
 .venv
+=======
+.venv
+>>>>>>> main
