@@ -1,0 +1,98 @@
+[{
+    "pass": {
+        "parameters": {},
+        "description": "",
+        "documentation": "Do nothing this turn. You may not take any other actions.",
+        "tags": ["EXTERNAL", "CORE", "SINGLE"]
+    },
+    "say": {
+        "parameters": { "sentence": "Paragraph" },
+        "description": "{agent} said \"{0}\"",
+        "documentation": "Do nothing this turn. You may not take any other actions.",
+        "tags": ["EXTERNAL", "CORE", "EMITTED"]
+    },
+    "attack": {
+        "parameters": { "user_id": "AgentID" },
+        "description": "{agent} attacked {0}.",
+        "documentation": "Attack another user. Only use this when you want to use physical violence against another person.",
+        "tags": ["EXTERNAL", "CORE", "EMITTED"]
+    },
+    "move_to_location": {
+        "parameters": { "location": "LocationID" },
+        "description": "{agent} left the area.",
+        "documentation": "Walk to another location. This will terminate any conversations that you were having at this location.",
+        "tags": ["EXTERNAL", "CORE", "EMITTED"]
+    },
+    "accompany_user": {
+        "parameters": { "user_id": "AgentID" },
+        "description": "{agent} is now following {0}.",
+        "documentation": "Follow where the user takes you. Use this when you would like to accompany the user to a destination.",
+        "tags": ["EXTERNAL", "CORE", "EMITTED"]
+    },
+    "raise_emotion": {
+        "parameters": { "emotion": "Emotion" },
+        "description": "{agent} raised their {0}.",
+        "documentation": "Increases the strength of a certain emotion, and should be used whenever your emotions change.",
+        "tags": ["EXTERNAL", "MENTAL"]
+    },
+    "lower_emotion": {
+        "parameters": { "emotion": "Emotion" },
+        "description": "{agent} lowered their {0}.",
+        "documentation": "Lower the strength of a certain emotion, and should be used whenever your emotions change.",
+        "tags": ["EXTERNAL", "MENTAL"]
+    },
+    "add_long_term_goal": {
+        "parameters": { "goal": "Sentence" },
+        "description": "{agent} added {0} to long term goals.",
+        "documentation": "Adds a goal to your long term goals.",
+        "tags": ["EXTERNAL", "MENTAL"]
+    },
+    "add_short_term_goal": {
+        "parameters": { "goal": "Sentence" },
+        "description": "{agent} added {0} to short term goals.",
+        "documentation": "Adds a goal to your short term goals.",
+        "tags": ["EXTERNAL", "MENTAL"]
+    },
+    "collect_claim": {
+        "parameters": { "source_user_id": "AgentID", "sentence": "Sentence" },
+        "description": "{agent} learned the fact \"{1}\" from {0}.",
+        "documentation": "When someone tells you an interesting piece of information, whether it is believable or not, immediately store their claim using this function. Since it is passed to a database as a standalone statement, use full names and IDs when referring to things. Write it in the 3rd person (i.e. refer to yourself using your full name and ID).",
+        "tags": ["INTERNAL", "MENTAL"]
+    },
+    "collect_evidence": {
+        "parameters": { "sentence": "Sentence" },
+        "description": "{agent} stored evidence \"{0}\".",
+        "documentation": "When someone does something interesting or noteworthy, record it.",
+        "tags": ["INTERNAL", "MENTAL"]
+    },
+    "query_memory_database": {
+        "parameters": { "sentence": "Sentence" },
+        "description": "{agent} consulted their memory about \"{0}\"",
+        "documentation": "Use this function only when you feel that you need to remember something about your (the NPC's) past actions or encounters, or something that specifically requires knowledge about the game world. Since it is passed to a search engine as a standalone search query, use full names and IDs when referring to things. Only use this function when necessary, and avoid using it too often.",
+        "tags": ["EXTERNAL", "MENTAL"]
+    },
+    "update_perception_of": {
+        "parameters": { "user_id": "AgentID", "note": "Sentence" },
+        "description": "{agent} added \"{1}\" to their notes about {0}.",
+        "documentation": "{agent} added \"{1}\" to their notes about {0}.",
+        "tags": ["EXTERNAL", "MENTAL"]
+    },
+    "give_item": {
+        "parameters": { "target_user_id": "AgentID", "item_id": "InventoryItemID" },
+        "description": "{agent} gave {1} to {0}.",
+        "documentation": "Give an item to another user. You can only give items that you have in your inventory, so only call this function when you actually have the item you want to give. Whenever you say you're giving the user something, you MUST call this function so that you actually give it.",
+        "tags": ["EXTERNAL", "CORE", "EMITTED"]
+    },
+    "pick_up_item": {
+        "parameters": { "item_id": "ItemID" },
+        "description": "{agent} picked up {0}.",
+        "documentation": "Pick up an item that is within your sight.",
+        "tags": ["EXTERNAL", "CORE", "EMITTED"]
+    },
+    "end_conversation": {
+        "parameters": { },
+        "description": "{agent} ended the conversation.",
+        "documentation": "Once you feel like you tire of the conversation or there is nothing productive left to say, call this function.",
+        "tags": ["EXTERNAL", "CORE", "EMITTED"]
+    }
+}]

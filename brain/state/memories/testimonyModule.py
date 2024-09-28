@@ -16,8 +16,11 @@ class TestimonyModule:
     def __init__(self):
         self._testimonyArr = set()
     
-    def addClaim(self, knowledgeBase, claim: str, sourceID=-1, degree=1):
-        self._testimonyArr.add(knowledgeBase.getClaim(claim, sourceID, degree).getID())
+    def addClaim(self, knowledgeBase, claim: str, sourceID=-1, degree=1) -> int:
+        id = knowledgeBase.getClaim(claim, sourceID, degree).getID()
+        self._testimonyArr.add(id)
+
+        return id
     
     def getClaims(self):
         return self._testimonyArr
@@ -58,36 +61,39 @@ class TestimonyModule:
             else:
                 return matches[int(out) - 1][1]
     
-    def believabilityScore(self, perceptionModule, assertion):
+    def believabilityScore(self, perceptionModule, assertion) -> float:
         if assertion.getDegree() == 1:
             return 1
 
         perception = perceptionModule.getPerception(assertion.getSourceID())
 
-        trustworthiness = perception.getTrustworthiness() if perception else 1
+        trustworthiness = perception.getTrustworthiness() if perception else Degree.NEUTRAL
 
-        return (int(trustworthiness) + 1.0) / (len(Degree)) / assertion.getDegree()
+        return (trustworthiness._value_ + 1.0) / (len(Degree)) / assertion.getDegree()
 
     def believability(self, knowledgeBase, perceptionModule, assertion):
         score = self.believabilityScore(perceptionModule, assertion)
 
         support = {}
 
-        connected = [pair for pair in knowledgeBase.getConnections(assertion).items() if pair[0] in self._testimonyArr]
+        connected = {k:v for k,v in knowledgeBase.getConnections(assertion).items() if k in self._testimonyArr}
 
         for pair in connected.items():
             id = pair[0]
-            strength = pair[1]
+            strength = float(pair[1])
 
-            assertion = knowledgeBase.getClaim(id)
+            if id == assertion.getID():
+                continue
 
-            if assertion.getSourceID() not in support:
-                support[assertion.getSourceID()] = 0
+            claim = knowledgeBase.getExistingClaim(id)
+
+            if claim.getSourceID() not in support:
+                support[claim.getSourceID()] = 0
             
-            support[assertion.getSourceID()] += strength * self.believabilityScore(perceptionModule, assertion)
-            support[assertion.getSourceID()] = max(-1, min(1, support[assertion.getSourceID()]))
+            support[claim.getSourceID()] += strength * self.believabilityScore(perceptionModule, claim)
+            support[claim.getSourceID()] = max(-1, min(1, support[claim.getSourceID()]))
         
-        totalDisagreement = score + sum([pair[1] for pair in support])
+        totalDisagreement = score + sum([pair[1] for pair in support.items()])
         
         if totalDisagreement <= -1:
             return "not true"

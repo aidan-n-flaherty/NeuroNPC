@@ -1,8 +1,18 @@
 from LLM.constants.constants import MODEL_NAME, NARRATOR_NAME
 from brain.state.memories.observedMemory import ObservedMemory
 import time
+import re
+import nltk
+nltk.download('stopwords')
+nltk.download('maxent_ne_chunker')
+nltk.download('words')
+
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from nltk import ne_chunk, pos_tag, word_tokenize
+from nltk.tree import Tree
+
+
 
 stop_words = set(stopwords.words('english'))
 
@@ -15,6 +25,28 @@ def getNarratorName():
 def removeStopWords(text: str):
     word_tokens = word_tokenize(text)
     text = " ".join([w for w in word_tokens if not w.lower() in stop_words and not w in ['.', '?', '!', '\'', '"', ',', ';', ':', '-', '(', ')']])
+    
+    return text
+
+def resolveNames(text: str, world):
+    for match in re.findall(r"<@[0-9]+>", text):
+        id = re.sub("[^0-9]", "", match)
+        name = world.getAgent(id).getName()
+
+        text = text.replace(match, name)
+    
+    return text
+
+def formatTags(text: str, world):
+    results = ne_chunk(pos_tag(word_tokenize(text)))
+    
+    for result in results:
+        if type(result) == Tree:
+            name = ' '.join([leaf[0] for leaf in result.leaves()])
+            if result.label() == 'PERSON':
+                agent = world.getAgentByName(name)
+                if agent:
+                    text = text.replace(name, "<@{}>".format(agent.getID()))
     
     return text
 
@@ -37,11 +69,14 @@ def formatHistory(agentID: int, summarizedMemory, observedMemoryModule):
             history += "<|im_end|>\n<|im_start|>{}".format(author)
         
         if memory.getAgentID() >= 0 and memory.getAgentID() != agentID and memory.getAgentID() not in referencedAgents:
-            history += "\n" + observedMemoryModule.getPerception(memory.getAgentID())
+            history += "\n" + observedMemoryModule.getPerceptionStr(memory.getAgentID())
 
             referencedAgents.add(memory.getAgentID())
 
         history += "\n{memory}".format(memory=(memory.getFunctionCall() if memory.referencesAgent(agentID) else memory.getObservedDescription()))
+
+        if memory.getNote():
+            history += " " + memory.getNote()
 
         lastAuthor = author
     

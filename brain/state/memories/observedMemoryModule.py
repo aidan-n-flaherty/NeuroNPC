@@ -33,12 +33,12 @@ class ObservedMemoryModule:
 
         return self.offloaded
 
-    def getPerception(self, agentID: int):
+    def getPerceptionStr(self, agentID: int):
         return self._perceptions[agentID] if agentID in self._perceptions else None
 
     def addMemory(self, memory: ObservedMemory, perceptionModule):
         if memory.getAgentID() not in self._perceptions:
-            self._perceptions[memory.getAgentID()] = perceptionModule.getPerception(memory.getAgentID())
+            self._perceptions[memory.getAgentID()] = perceptionModule.getPerceptionStr(memory.getAgentID())
         
         self._shortTermMemories.append(memory)
     

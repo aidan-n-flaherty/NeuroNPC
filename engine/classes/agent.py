@@ -16,7 +16,13 @@ class Agent(GameObject):
         return self._artificial
     
     def getName(self) -> str:
-        return " ".join(self._name) + " (id: {})".format(self.getID())
+        return " ".join(self._name)
+    
+    def getFirstName(self) -> str:
+        return self._name[0]
+    
+    def getLastName(self) -> str:
+        return self._name[1]
     
     def addItem(self, itemID: int) -> None:
         self._inventory.append(itemID)
@@ -30,4 +36,4 @@ class Agent(GameObject):
         return self._inventory
     
     def getIdentifier(self) -> str:
-        return '<Agent(name: "{name}", id:{id})>'.format(name=" ".join(self._name), id=self.getID())
+        return '<@{id}>'.format(id=self.getID())

@@ -11,10 +11,11 @@ from brain.state.perceptions.perceptionModule import PerceptionModule
 from brain.state.motivations.motivationModule import MotivationModule
 from brain.state.memories.evidence import Evidence
 from engine.actions.action import Action
+from engine.actions.actionType import ActionType
 import engine.actions.actionManager as ActionManager
 import LLM.formatter.formatter as Formatter
 import LLM.generator.generator as Generator
-import LLM.formatter.parser as Parser
+import LLM.parser.parser as Parser
 import LLM.formatter.grammar as Grammar
 import LLM.constants.constants as LLMConstants
 import time
@@ -46,7 +47,16 @@ class NPC(Agent):
 
         if actionResponse:
             if action:
-                self._memoryModule.addMemory(self, world.getKnowledgeBase(), ObservedMemory(timestamp, agent.getID() if agent is not None else -1, action, "", description, action.getObservedDescription(world, agent.getID(), self.getID()) if agent is not None else "", embedding), self._perceptionModule)
+                memory = ObservedMemory(timestamp, agent.getID() if agent is not None else -1, action, "", description, action.getObservedDescription(world, agent.getID(), self.getID()) if agent is not None else "", embedding)
+                self._memoryModule.addMemory(self, world.getKnowledgeBase(), memory, self._perceptionModule)
+
+                if action.getType() == ActionType("say"):
+                    classification = Generator.classify(action.getParameter(0), ['claim', 'speculation', 'question', 'rhetorical question', 'conditional', 'sarcasm', 'joke', 'threat', 'suggestion', 'promise', 'small talk', 'other'])
+                    print(classification)
+                    if 'claim' == classification:
+                        extracted = self._memoryModule.extract(world)
+                        id = self._memoryModule.addTestimony(world.getKnowledgeBase(), extracted, agent.getID(), 2)
+                        memory.setNote(self._memoryModule.check(world.getKnowledgeBase(), self._perceptionModule, world.getKnowledgeBase().getExistingClaim(id).getClaim(), agent.getID()))
 
             if actionResponse.getResponse():
                 responseArr = [actionResponse.getResponse()]
@@ -62,9 +72,10 @@ class NPC(Agent):
                 observedDescription = response.getObservedDescription(world, self.getID(), self.getID())
                 self._memoryModule.addMemory(self, world.getKnowledgeBase(), ObservedMemory(timestamp, self.getID(), response, selfDescription, responseDescription, observedDescription, Generator.encode(Formatter.removeStopWords(responseDescription))), self._perceptionModule)
 
-                if response.getName() in ActionManager.getMentalActionNames():
+                if response.getType() in ActionManager.getMentalActions():
                     returnArr += self.processSelf(world, agent, response, timestamp, description, embedding)
-                if response.getName() == "MOVE_TO_LOCATION":
+
+                if response.getType() == ActionType("move_to_location"):
                     self._locationID = response.getParameter(0)
                     returnArr += self.react(world, None, None, timestamp, description, embedding)
 
@@ -73,20 +84,20 @@ class NPC(Agent):
         return []
     
     def processSelf(self, world: World, agent: Agent, action: Action, timestamp: int, description: str, embedding) -> list[Action]:
-        if action.getName() == "RAISE_EMOTION":
+        if action.getType() == ActionType("raise_emotion"):
             self._emotionModule.increaseEmotion(action.getParameter(0))
-        elif action.getName() == "LOWER_EMOTION":
+        elif action.getType() == ActionType("lower_emotion"):
             self._emotionModule.decreaseEmotion(action.getParameter(0))
-        elif action.getName() == "UPDATE_PERCEPTION_OF":
+        elif action.getType() == ActionType("update_perception_of"):
             self._perceptionModule.addNote(time.time(), action.getParameter(0), action.getParameter(1))
-        elif action.getName() == "COLLECT_CLAIM":
+        elif action.getType() == ActionType("collect_claim"):
             self._memoryModule.addEvidence(Evidence(timestamp, action.getParameter(0), action.getParameter(1)))
-        elif action.getName() == "CHECK_CLAIM":
+        elif action.getType() == ActionType("check_claim"):
             response = Action("NONE", [self._memoryModule.check(world.getKnowledgeBase(), self._perceptionModule, action.getParameter(0), self._reactionModule.getConversingWith())], "You evaluate the statement as: {0}.", "You evaluate the statement as: {0}.")
             description = response.getDescription(world, self.getID())
             embedding = Generator.encode(Formatter.removeStopWords(description))
             return self.react(world, None, response, timestamp, description, embedding)
-        elif action.getName() == "QUERY_MEMORY_DATABASE":
+        elif action.getType() == ActionType("query_memory_database"):
             response = Action("NONE", [self._memoryModule.query(self, action.getParameter(0))], "From your memories: {0}.", "From your memories: {0}.")
             description = response.getDescription(world, self.getID())
             embedding = Generator.encode(Formatter.removeStopWords(description))
@@ -97,13 +108,13 @@ class NPC(Agent):
     def recalculate(self, world: World) -> list[Action]:
         with open('brain/core/prompts/recalculate.txt', 'r') as prompt, open('brain/core/prompts/recalculate.gnbf', 'r') as grammar:
             prompt = prompt.read().format(\
-                identifier=self.getIdentifier(),
+                identifier=self.getIdentifier() + " (name: " + self.getName() + ")",
                 backstory=self._backstory, \
                 narrator=LLMConstants.NARRATOR_NAME, \
-                functionDescriptions="\n".join(["{}: {}".format(ActionManager.getFunctionStr(action), ActionManager.getDocumentation(action)) for action in ActionManager.getActionNames()]), \
+                functionDescriptions="\n".join(["{}: {}".format(ActionManager.getFunctionStr(action), ActionManager.getDocumentation(action)) for action in ActionManager.getActions()]), \
                 history=Formatter.formatHistory(self.getID(), self._memoryModule.getSummary(), self._memoryModule.getObserved()), \
                 emotions=str(self._emotionModule), \
-                functionList=", ".join(ActionManager.getActionNames()), \
+                functionList=", ".join(ActionManager.getActions()), \
                 inventory='[{}]'.format(', '.join([world.getItem(itemID).getIdentifier() for itemID in self.getInventory()])), \
                 agents='[{}]'.format(', '.join([world.getAgent(agentID).getIdentifier() for agentID in world.getInteractableAgents(self.getID())])), \
                 objects='[{}]'.format(', '.join([world.getItem(itemID).getIdentifier() for itemID in world.getInteractableItems(self.getID())])), \
@@ -112,13 +123,12 @@ class NPC(Agent):
                 personality=str(self._personalityModule))
             
             grammar = grammar.read().format(\
-                mainActionList=" | ".join([name.replace("_", "") for name in ActionManager.getMainActionNames()]), \
-                actionList=" | ".join([name.replace("_", "") for name in ActionManager.getActionNames() if name not in ActionManager.getSingleActionNames()]), \
-                singleActionList=" | ".join([name.replace("_", "") for name in ActionManager.getSingleActionNames()]), \
-                functionGrammars="\n\n".join(['{} ::= {}'.format(action.name.replace("_", ""), Grammar.generateGrammar(action, world, self.getID())) for action in ActionManager.getActions()]))
+                mainActionList=" | ".join([action.replace("_", "") for action in ActionManager.getMainActions() if not Grammar.grammarMissing(action, world, self.getID())]), \
+                actionList=" | ".join([action.replace("_", "") for action in ActionManager.getActions() if action not in ActionManager.getSingleActions() and not Grammar.grammarMissing(action, world, self.getID())]), \
+                singleActionList=" | ".join([action.replace("_", "") for action in ActionManager.getSingleActions() if not Grammar.grammarMissing(action, world, self.getID())]), \
+                functionGrammars="\n\n".join(['{} ::= {}'.format(action.replace("_", ""), Grammar.generateGrammar(action, world, self.getID())) for action in ActionManager.getActions()]))
             
             print(Formatter.generatePrompt(prompt))
-            print(grammar)
             result = Generator.create_completion(Formatter.generatePrompt(prompt), grammar=LlamaGrammar.from_string(grammar, verbose=False))
 
             returnVal = Parser.parseFunctionList(result["choices"][0]["text"])

@@ -6,6 +6,7 @@ from engine.core.knowledgeBase import KnowledgeBase
 from engine.classes.assertion import Assertion
 import LLM.generator.generator as Generator
 import time
+from difflib import SequenceMatcher
 
 class World:
     def __init__(self):
@@ -22,6 +23,13 @@ class World:
     
     def getContradictions(self, assertion: Assertion):
         return self._knowledgeBase.getContradictions(assertion)
+    
+    def getAgentByName(self, agentName: str):
+        options = sorted(self._agents.values(), key=lambda agent: max([SequenceMatcher(None, name, agentName).ratio() for name in [agent.getName(), agent.getFirstName(), agent.getLastName()]]))
+
+        if max([SequenceMatcher(None, name, agentName).ratio() for name in [options[-1].getName(), options[-1].getFirstName(), options[-1].getLastName()]]) > 0.5:
+            return options[-1]
+        return None
 
     def getAgent(self, agentID: int):
         return self._agents[agentID] if agentID in self._agents else None

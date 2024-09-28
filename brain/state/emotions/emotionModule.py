@@ -1,8 +1,5 @@
-from enum import Enum
 from engine.enums.degree import Degree
-
-class Emotion(Enum):
-   HAPPINESS, SADNESS, FEAR, ANGER, DISGUST, SURPRISE = range(6)
+from engine.enums.emotion import Emotion
 
 class EmotionModule:
     def __init__(self) -> None:

@@ -1,4 +1,5 @@
-import LLM.formatter.parser as Parser
+import LLM.parser.parser as Parser
+import LLM.formatter.formatter as Formatter
 from engine.classes.agent import Agent
 from brain.core.npc import NPC
 from engine.core.world import World
@@ -8,6 +9,7 @@ from engine.classes.item import Item
 from engine.classes.location import Location
 from brain.state.personality.personalityModule import PersonalityModule
 from engine.enums.degree import Degree
+from engine.actions.actionType import ActionType
 
 world = World()
 
@@ -37,7 +39,7 @@ while True:
     try:
         action = Parser.parseFunctionCall(user)
     except:
-        action = Action("SAY", [user], "", ActionManager.getDescription("SAY"))
+        action = Action(ActionType("say"), [Formatter.formatTags(user, world)], "", ActionManager.getDescription(ActionType("say")))
     
     world.emitAction(0, action)
 

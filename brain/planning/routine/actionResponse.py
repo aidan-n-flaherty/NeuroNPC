@@ -1,16 +1,16 @@
-from engine.actions.actionManager import Action
+from engine.actions.actionType import ActionType
 import engine.actions.actionManager
 from engine.classes.agent import Agent
 
 class ActionResponse:
-    def __init__(self, agent: Agent, action: Action, response: Action) -> None:
+    def __init__(self, agent: Agent, action: ActionType, response: ActionType) -> None:
         self._agents = []
         self._action = None
         self._response = None
 
         self.update(agent, action, response)
     
-    def update(self, agent: Agent, action: Action, response: Action) -> None:
+    def update(self, agent: Agent, action: ActionType, response: ActionType) -> None:
         if self._agents == None:
             self._agents = []
         

@@ -1,3 +1,3 @@
-root ::= "PASS()" | (collect ("\n" collect)?)
+root ::= "pass()" | (collect ("\n" collect)?)
 
-collect ::= ("COLLECT_CLAIM(" {agentIDs} ", " {statement} ")") | ("COLLECT_EVIDENCE(" {statement} ")")
+collect ::= ("collect_claim(" {agentIDs} ", " {statement} ")") | ("collect_evidence(" {statement} ")")
