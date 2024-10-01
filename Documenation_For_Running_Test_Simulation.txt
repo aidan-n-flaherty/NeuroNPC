@@ -1,0 +1,35 @@
+1. First install a LLM of your choice.
+
+	1.1 - we would recommend using this link: https://huggingface.co/TheBloke/OpenHermes-2.5-Mistral-7B-GGUF/tree/main 
+	
+	1.2 - Dowload this version: openhermes-2.5-mistral-7b.Q6_K.gguf : Size(5.94GB)
+
+	1.3 - Place the gguf file into NeuroNPC\LLM\modelCurrent
+
+2. Open Terminal And install all required libraries
+
+	2.0 - Make sure you have python installed and pip installed first. 
+
+	2.1 - pip install llama-cpp-python (this may take a while)
+
+	2.2 - pip install sentence-transformers
+
+	2.3 - pip install nltk
+
+3a. Run Simulation(Mac)
+	
+	3.1 - go to NeuroNPC directory
+
+	3.1 - type: export PYTHONPATH=.
+	
+	3.2 - type: python simulator/test.py
+
+3b. Run Simulation(Windows)
+
+	3.1 - go to NeuroNPC directory
+
+	3.1 - type: set PYTHONPATH=.
+
+	3.2 - type: python simulator/test.py
+
+	
