@@ -12,7 +12,7 @@ encoder = SentenceTransformer("all-MiniLM-L6-v2")
 import glob
 filepath = glob.glob("LLM/modelCurrent/*.gguf")[0]
 
-llm = Llama(model_path=filepath, chat_format="chatml", embedding=True, verbose=False, n_ctx=2048 + 1024, n_gpu_layers=-1)
+llm = Llama(model_path=filepath, chat_format="chatml", embedding=False, verbose=False, n_ctx=2048 + 1024, n_gpu_layers=-1, logits_all=True) #Try removing logits_all if running into any issues
 
 cache = LlamaRAMCache()
 
