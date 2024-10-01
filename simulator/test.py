@@ -19,9 +19,12 @@ world.registerItem(Item(4, 'tax returns: unsellable', 5, (0, 0, 0)))
 world.registerItem(Item(7, 'a pile of dog excrement', 6, (0, 0, 0)))
 world.registerItem(Item(8, 'a pouch of gold coins', 6, (0, 0, 0)))
 #registerAgent(Agent or NPC object) -- Agent is user. NPC is another NPC. Always give user false, and 0 ID
+#Usage- NPC(NPC ID, (firstName string, lastName string), Location ID, (Location vector), Description for LLM, PersonalityModule() )
 world.registerAgent(Agent(False, 0, ("John", "Doe"), 5, (0, 0, 0), []))
 world.registerAgent(NPC(1, ("Jane", "Doe"), 5, (0, 0, 0), [2, 3, 4], "You are a tavern owner. You have 1 son, 1 daughter, and 1 husband.", "You would like to make as much money as possible to support your family.", PersonalityModule(Degree.NEUTRAL, Degree.VERY_HIGH, Degree.NEUTRAL, Degree.NEUTRAL, Degree.VERY_LOW)))
 
+#registerLocation(Location object)
+#Usage- Location(locationID int, Description string, vector location, array of connected locations)
 world.registerLocation(Location(5, "Jane's Tavern", (0, 0, 0), [6]))
 world.registerLocation(Location(6, "Storage Closet", (1, 0, 0), [5]))
 
