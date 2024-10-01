@@ -1,7 +1,7 @@
-import LLM.formatter.parser as Parser
-from engine.classes.agent import Agent
-from brain.core.npc import NPC
-from engine.core.world import World
+import LLM.formatter.parser as Parser   #This is how LLM output is parsed
+from engine.classes.agent import Agent  #This is the User
+from brain.core.npc import NPC          #This is the NPC
+from engine.core.world import World     #This is where KnowledgeBases, NPCS, Items, locations are initiated
 from engine.actions.action import Action
 import engine.actions.actionManager as ActionManager
 from engine.classes.item import Item
@@ -9,13 +9,16 @@ from engine.classes.location import Location
 from brain.state.personality.personalityModule import PersonalityModule
 from engine.enums.degree import Degree
 
+#Create world onject
 world = World()
 
+#registerItem(Item Object) -- Item Object created by: Item(int ID, string name_and_cost, int location_of_item_ID, vector coordinate)
 world.registerItem(Item(2, 'a mug of beer: costs 10 gold', 5, (0, 0, 0)))
 world.registerItem(Item(3, 'a sword: costs 50 gold', 5, (0, 0, 0)))
 world.registerItem(Item(4, 'tax returns: unsellable', 5, (0, 0, 0)))
 world.registerItem(Item(7, 'a pile of dog excrement', 6, (0, 0, 0)))
 world.registerItem(Item(8, 'a pouch of gold coins', 6, (0, 0, 0)))
+#registerAgent(Agent or NPC object) -- Agent is user. NPC is another NPC. Always give user false, and 0 ID
 world.registerAgent(Agent(False, 0, ("John", "Doe"), 5, (0, 0, 0), []))
 world.registerAgent(NPC(1, ("Jane", "Doe"), 5, (0, 0, 0), [2, 3, 4], "You are a tavern owner. You have 1 son, 1 daughter, and 1 husband.", "You would like to make as much money as possible to support your family.", PersonalityModule(Degree.NEUTRAL, Degree.VERY_HIGH, Degree.NEUTRAL, Degree.NEUTRAL, Degree.VERY_LOW)))
 
