@@ -1,6 +1,6 @@
 import LLM.generator.generator as Generator
 import LLM.formatter.formatter as Formatter
-import LLM.formatter.parser as Parser
+import LLM.parser.parser as Parser
 from engine.classes.assertion import Assertion
 
 from llama_cpp import LlamaGrammar
@@ -39,8 +39,8 @@ class KnowledgeBase:
 
         return assertion
     
-    def getClaim(self, claimID: int):
-        return self.assertions[claimID]
+    def getExistingClaim(self, claimID: int):
+        return self._assertions[claimID]
 
     def getClaim(self, claim: str, sourceID=-1, degree=1):
         if claim in self._strToAssertion:
@@ -90,6 +90,7 @@ class KnowledgeBase:
                 i += 1
 
                 value = item.split(": ")[-1]
+                value = int(value.replace("%", ""))/100.0
 
                 if assertion.getID() not in self._supportNetwork:
                     self._supportNetwork[assertion.getID()] = {}
@@ -101,6 +102,6 @@ class KnowledgeBase:
 
     def getConnections(self, assertion: Assertion):
         if not assertion.getID() in self._supportNetwork:
-            return []
+            return {}
         
         return self._supportNetwork[assertion.getID()]

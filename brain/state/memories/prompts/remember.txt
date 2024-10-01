@@ -8,6 +8,6 @@ Here are some specific matches from your observed memory: [{observedMemories}]
 
 Here are some pieces of evidence you have collected: [{evidence}]
 
-Please write one brief sentence that answers the query based on what you know, while also not omitting any relevant information. Minimize speculation, but you may infer obvious facts based on your memories.
+Please write one brief sentence that answers the query based on what you know, while also not omitting any relevant information. Minimize speculation.
 
 Answer on behalf of the NPC. Answer to "{query}" based on your memories:

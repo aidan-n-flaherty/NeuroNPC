@@ -9,4 +9,4 @@ class Item(GameObject):
         return self._name
 
     def getIdentifier(self) -> str:
-        return '<Item(name: "{name}", id: {id})>'.format(name=self._name, id=self.getID())
+        return 'Item(name: "{name}", id: {id})'.format(name=self._name, id=self.getID())

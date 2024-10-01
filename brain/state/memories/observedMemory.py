@@ -3,7 +3,7 @@ import LLM.formatter.formatter as Formatter
 from engine.actions.action import Action
 
 class ObservedMemory:
-    def __init__(self, timestamp: int, agentID: int, action: Action, selfDescription: str, description: str, observedDescription: str, embedding) -> None:
+    def __init__(self, timestamp: int, agentID: int, action: Action, selfDescription: str, description: str, observedDescription: str, embedding, note=None) -> None:
         self._timestamp = timestamp
         self._agentID = agentID
         self._description = description
@@ -11,6 +11,10 @@ class ObservedMemory:
         self._observedDescription = observedDescription
         self._embedding = embedding
         self._action = action
+        self._note = note
+
+    def setNote(self, note: str):
+        self._note = note
 
     def getAction(self):
         return self._action
@@ -44,6 +48,9 @@ class ObservedMemory:
 
     def getDescription(self):
         return self._description
+    
+    def getNote(self):
+        return "({})".format(self._note) if self._note else None
     
     def getIdentifier(self):
         return "<Memory from {time}: \"{description}\">".format(time=Formatter.timeToString(self._timestamp), description=self._description)

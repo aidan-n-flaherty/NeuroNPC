@@ -3,6 +3,7 @@ import LLM.formatter.formatter as Formatter
 import LLM.generator.generator as Generator
 import brain.constants.constants as Constants
 from engine.enums.degree import Degree
+from engine.enums.relation import Relation
 
 class Perception:
     def __init__(self, timestamp: int, agentID: int, note: str) -> None:
@@ -11,8 +12,9 @@ class Perception:
         self._privateNotes = [note]
         self._externalNotes = []
         self._trustworthiness = Degree.NEUTRAL
+        self._relation = Relation.STRANGER
 
-    def getTrustworthiness(self):
+    def getTrustworthiness(self) -> Degree:
         return self._trustworthiness
 
     def update(self, timestamp: int, note: str) -> None:

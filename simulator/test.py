@@ -1,13 +1,15 @@
-import LLM.formatter.parser as Parser   #This is how LLM output is parsed
-from engine.classes.agent import Agent  #This is the User
-from brain.core.npc import NPC          #This is the NPC
-from engine.core.world import World     #This is where KnowledgeBases, NPCS, Items, locations are initiated
+import LLM.parser.parser as Parser          #This is how LLM output is parsed
+import LLM.formatter.formatter as Formatter #This is where LLM outpput is formated
+from engine.classes.agent import Agent      #This is the User
+from brain.core.npc import NPC              #This is the NPC
+from engine.core.world import World         #This is where KnowledgeBases, NPCS, Items, locations are initiated
 from engine.actions.action import Action
 import engine.actions.actionManager as ActionManager
 from engine.classes.item import Item
 from engine.classes.location import Location
 from brain.state.personality.personalityModule import PersonalityModule
 from engine.enums.degree import Degree
+from engine.actions.actionType import ActionType
 
 #Create world onject
 world = World()
@@ -21,7 +23,7 @@ world.registerItem(Item(8, 'a pouch of gold coins', 6, (0, 0, 0)))
 #registerAgent(Agent or NPC object) -- Agent is user. NPC is another NPC. Always give user false, and 0 ID
 #Usage- NPC(NPC ID, (firstName string, lastName string), Location ID, (Location vector), Description for LLM, PersonalityModule() )
 world.registerAgent(Agent(False, 0, ("John", "Doe"), 5, (0, 0, 0), []))
-world.registerAgent(NPC(1, ("Jane", "Doe"), 5, (0, 0, 0), [2, 3, 4], "You are a tavern owner. You have 1 son, 1 daughter, and 1 husband.", "You would like to make as much money as possible to support your family.", PersonalityModule(Degree.NEUTRAL, Degree.VERY_HIGH, Degree.NEUTRAL, Degree.NEUTRAL, Degree.VERY_LOW)))
+world.registerAgent(NPC(1, ("Jane", "Doe"), 5, (0, 0, 0), [2, 3, 4], "You are a tavern owner. You have 1 son named <@145>, 1 daughter named <@325>, and 1 husband named <@874>.", "You would like to make as much money as possible to support your family.", PersonalityModule(Degree.VERY_LOW, Degree.VERY_HIGH, Degree.VERY_LOW, Degree.VERY_HIGH, Degree.NEUTRAL)))
 
 #registerLocation(Location object)
 #Usage- Location(locationID int, Description string, vector location, array of connected locations)
@@ -43,7 +45,7 @@ while True:
     try:
         action = Parser.parseFunctionCall(user)
     except:
-        action = Action("SAY", [user], "", ActionManager.getDescription("SAY"))
+        action = Action(ActionType("say"), [Formatter.formatTags(user, world)], "", ActionManager.getDescription(ActionType("say")))
     
     world.emitAction(0, action)
 

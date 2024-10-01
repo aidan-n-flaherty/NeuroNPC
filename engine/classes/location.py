@@ -23,4 +23,4 @@ class Location(GameObject):
         return self._adjacentLocationIDs
 
     def getIdentifier(self) -> str:
-        return '<Location(name: "{name}", id: {id})>'.format(name=self._name, id=self.getID())
+        return 'Location(name: "{name}", id: {id})'.format(name=self._name, id=self.getID())

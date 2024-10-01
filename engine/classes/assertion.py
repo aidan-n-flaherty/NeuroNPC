@@ -32,4 +32,4 @@ class Assertion:
         return self._embedding
     
     def getIdentifier(self, world):
-        return "<Assertion collected {time}: {agent} claimed that \"{claim}\">".format(time=Formatter.timeToString(self._timestamp), agent=world.getAgent(self._sourceID).name, claim=self._claim)
+        return "Assertion(collected: {time}, source: {agent}, claim: \"{claim}\")".format(time=Formatter.timeToString(self._timestamp), agent=world.getAgent(self._sourceID).name, claim=self._claim)

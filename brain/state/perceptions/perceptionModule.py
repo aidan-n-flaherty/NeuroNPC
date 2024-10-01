@@ -12,7 +12,10 @@ class PerceptionModule:
         
         self._perceptions[agentID] = Perception(timestamp, agentID, note)
     
-    def getPerception(self, agentID: int) -> str:
+    def getPerception(self, agentID: int):
+        return self._perceptions[agentID] if agentID in self._perceptions else None
+
+    def getPerceptionStr(self, agentID: int) -> str:
         if agentID in self._perceptions:
             return self._perceptions[agentID].getIdentifier()
                 
