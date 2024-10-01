@@ -19,5 +19,5 @@ Install a virtual environment so that your global installs won't interfere with 
 
 1. Enter the virtual environment
 2. Change directory to the main folder (`cd `path to project`/NueroNPC`)
-3. Make sure to set `PYTHONPATH` environment variable to `.` On Linux/Mac, this is `export PYTHONPATH=.` On windows, this is `set PYTHONPATH=.`
+3. Edit the `.venv/bin/activate` script and add the following: On Linux/Mac, `export PYTHONPATH=.` On windows, this is `set PYTHONPATH=.`
 4. Run `python simulator/test.py`
