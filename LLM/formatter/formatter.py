@@ -3,6 +3,7 @@ from brain.state.memories.observedMemory import ObservedMemory
 import time
 import re
 import nltk
+nltk.download('stopwords')
 nltk.download('maxent_ne_chunker')
 nltk.download('words')
 
@@ -70,6 +71,7 @@ def formatHistory(agentID: int, summarizedMemory, observedMemoryModule):
 
             referencedAgents.add(memory.getAgentID())
 
+        #history += "\n{memory}".format(memory=(memory.getFunctionCall() if memory.referencesAgent(agentID) else memory.getObservedDescription()))
         history += "\n{memory}".format(memory=(memory.getFunctionCall() if memory.referencesAgent(agentID) else memory.getObservedDescription()))
 
         if memory.getNote():

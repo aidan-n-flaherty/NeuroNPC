@@ -24,4 +24,4 @@ class EmotionModule:
         self._emotionMeter[emotion] = Degree(max(0, self._emotionMeter[emotion].value - 1))
 
     def __str__(self):
-        return '{{\n{}\n}}'.format('\n'.join(['{}: {}'.format(emotion.name, self._emotionMeter[emotion].name) for emotion in Emotion]))
+        return '{{\n{}\n}}'.format('\n'.join(['{}: {}'.format(emotion.name.lower().replace("_", " "), self._emotionMeter[emotion].name.lower().replace("_", " ")) for emotion in Emotion]))

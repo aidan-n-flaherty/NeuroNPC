@@ -61,8 +61,9 @@ with open("engine/actions/default/defaultActions.json", "r") as file:
         documentation = content["documentation"]
         description = content["description"]
         tags = [tag.upper() for tag in content["tags"]]
+        classifications = [classification.upper() for classification in content["classification"]] if "classification" in content else []
 
-        supportedActions[ActionType(action)] = ActionDetails(ActionType(action), substituteClasses(parameters), documentation, description, tags)
+        supportedActions[ActionType(action)] = ActionDetails(ActionType(action), substituteClasses(parameters), documentation, description, tags, classifications)
 
 def getActions() -> list[ActionType]:
     return supportedActions.keys()
@@ -81,6 +82,9 @@ def getActionDescriptions() -> list[str]:
 
 def shouldEmit(action: ActionType):
     return supportedActions[action].hasTag("EMIT")
+
+def isHostile(action: ActionType):
+    return supportedActions[action].hasClassification("HOSTILE")
 
 def getParameterTypes(action: ActionType):
     return [parameter for parameter in supportedActions[action].getParameters().values()]

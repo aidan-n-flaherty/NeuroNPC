@@ -2,17 +2,17 @@ from enum import Enum
 from engine.enums.degree import Degree
 
 class Trait(Enum):
-    OPENNESS, CONSCIENTIOUSNESS, EXTRAVERSION, AGREEABLENESS, NEUROTICISM = range(5)
+    HUMOR, PATIENCE, HELPFULNESS, INTELLIGENCE, DISCIPLINE = range(5)
 
 class PersonalityModule:
-    def __init__(self, openness: Degree, conscientiousness: Degree, extraversion: Degree, agreeableness: Degree, neuroticism: Degree) -> None:
+    def __init__(self, humor: Degree, patience: Degree, helpfulness: Degree, intelligence: Degree, discipline: Degree) -> None:
         self._personalityMeter = {}
 
-        self._personalityMeter[Trait.OPENNESS] = openness
-        self._personalityMeter[Trait.CONSCIENTIOUSNESS] = conscientiousness
-        self._personalityMeter[Trait.EXTRAVERSION] = extraversion
-        self._personalityMeter[Trait.AGREEABLENESS] = agreeableness
-        self._personalityMeter[Trait.NEUROTICISM] = neuroticism
+        self._personalityMeter[Trait.HUMOR] = humor
+        self._personalityMeter[Trait.PATIENCE] = patience
+        self._personalityMeter[Trait.HELPFULNESS] = helpfulness
+        self._personalityMeter[Trait.INTELLIGENCE] = intelligence
+        self._personalityMeter[Trait.DISCIPLINE] = discipline
 
     def getTraits(self):
         return self._personalityMeter.keys()
@@ -30,4 +30,4 @@ class PersonalityModule:
         self._personalityMeter[trait] = Degree(max(0, self._personalityMeter[trait].value - 1))
     
     def __str__(self):
-        return '{{\n{}\n}}'.format('\n'.join(['{}: {}'.format(trait.name, self._personalityMeter[trait].name) for trait in Trait]))
+        return '{{\n{}\n}}'.format('\n'.join(['{}: {}'.format(trait.name.lower().replace("_", " "), self._personalityMeter[trait].name.lower().replace("_", " ")) for trait in Trait]))

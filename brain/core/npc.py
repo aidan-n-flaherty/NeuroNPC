@@ -9,6 +9,7 @@ from brain.state.memories.observedMemory import ObservedMemory
 from brain.state.personality.personalityModule import PersonalityModule
 from brain.state.perceptions.perceptionModule import PerceptionModule
 from brain.state.motivations.motivationModule import MotivationModule
+from brain.behavior.behaviorModule import BehaviorModule
 from brain.state.memories.evidence import Evidence
 from engine.actions.action import Action
 from engine.actions.actionType import ActionType
@@ -26,6 +27,7 @@ class NPC(Agent):
         self._backstory = backstory
         self._emotionModule = EmotionModule()
         self._reactionModule = ReactionModule()
+        self._behaviorModule = BehaviorModule()
         self._memoryModule = MemoryModule()
         self._personalityModule = personalityModule
         self._perceptionModule = PerceptionModule()
@@ -35,33 +37,33 @@ class NPC(Agent):
         return self._backstory
 
     def conversationStart(self, agentID: int):
-        self._reactionModule.startConversingWith(agentID)
+        self._behaviorModule.startConversingWith(agentID)
     
     def conversationEnd(self, agentID: int):
-        self._reactionModule.endConversation(agentID)
+        self._behaviorModule.endConversation(agentID)
 
     def react(self, world: World, agent: Agent, action: Action, timestamp: int, description: str, embedding) -> list[Action]:
-        actionResponse = self._reactionModule.getReaction(agent, action)
+        response = self._behaviorModule.getReaction(self._personalityModule, self._perceptionModule, agent, action)
 
         responseArr = None
 
-        if actionResponse:
+        if response:
             if action:
-                memory = ObservedMemory(timestamp, agent.getID() if agent is not None else -1, action, "", description, action.getObservedDescription(world, agent.getID(), self.getID()) if agent is not None else "", embedding)
+                memory = ObservedMemory(timestamp, agent.getID() if agent is not None else -1, action, "", description, action.getObservedDescription(world, agent.getID(), self.getID()) if agent is not None else action.getObservedDescription(world, -1, self.getID()), embedding)
                 self._memoryModule.addMemory(self, world.getKnowledgeBase(), memory, self._perceptionModule)
 
                 if action.getType() == ActionType("say"):
-                    classification = Generator.classify(action.getParameter(0), ['claim', 'speculation', 'question', 'rhetorical question', 'conditional', 'sarcasm', 'joke', 'threat', 'suggestion', 'promise', 'small talk', 'other'])
+                    classification = Generator.classify("A: " + action.getParameter(0), ['claim', 'desire', 'speculation', 'question', 'rhetorical question', 'conditional', 'sarcasm', 'joke', 'threat', 'suggestion', 'promise', 'small talk', 'other'])
                     print(classification)
                     if 'claim' == classification:
                         extracted = self._memoryModule.extract(world)
                         id = self._memoryModule.addTestimony(world.getKnowledgeBase(), extracted, agent.getID(), 2)
                         memory.setNote(self._memoryModule.check(world.getKnowledgeBase(), self._perceptionModule, world.getKnowledgeBase().getExistingClaim(id).getClaim(), agent.getID()))
 
-            if actionResponse.getResponse():
-                responseArr = [actionResponse.getResponse()]
-            else:
+            if response.getType() == ActionType("recalculate"):
                 responseArr = self.recalculate(world)
+            else:
+                responseArr = [response]
         
         if responseArr:
             returnArr = [action for action in responseArr]
@@ -90,15 +92,13 @@ class NPC(Agent):
             self._emotionModule.decreaseEmotion(action.getParameter(0))
         elif action.getType() == ActionType("update_perception_of"):
             self._perceptionModule.addNote(time.time(), action.getParameter(0), action.getParameter(1))
-        elif action.getType() == ActionType("collect_claim"):
-            self._memoryModule.addEvidence(Evidence(timestamp, action.getParameter(0), action.getParameter(1)))
         elif action.getType() == ActionType("check_claim"):
             response = Action("NONE", [self._memoryModule.check(world.getKnowledgeBase(), self._perceptionModule, action.getParameter(0), self._reactionModule.getConversingWith())], "You evaluate the statement as: {0}.", "You evaluate the statement as: {0}.")
             description = response.getDescription(world, self.getID())
             embedding = Generator.encode(Formatter.removeStopWords(description))
             return self.react(world, None, response, timestamp, description, embedding)
         elif action.getType() == ActionType("query_memory_database"):
-            response = Action("NONE", [self._memoryModule.query(self, action.getParameter(0))], "From your memories: {0}.", "From your memories: {0}.")
+            response = Action(ActionType("NONE"), [self._memoryModule.query(self, action.getParameter(0))], "From your memories: {0}.", "From your memories: {0}.")
             description = response.getDescription(world, self.getID())
             embedding = Generator.encode(Formatter.removeStopWords(description))
             return self.react(world, None, response, timestamp, description, embedding)

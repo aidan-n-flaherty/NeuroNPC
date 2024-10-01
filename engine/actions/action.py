@@ -4,7 +4,7 @@ from engine.actions.actionType import ActionType
 from enum import Enum
 
 class Action:
-    def __init__(self, actionType: ActionType, actionParameters: list, unparsedStr: str, descriptionStr: str) -> None:
+    def __init__(self, actionType: ActionType, actionParameters=[], unparsedStr="", descriptionStr="") -> None:
         self._actionType = actionType
         self._actionParameters = actionParameters
         self._descriptionStr = descriptionStr

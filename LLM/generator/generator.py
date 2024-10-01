@@ -1,5 +1,5 @@
 from llama_cpp import Llama, LlamaRAMCache, LlamaGrammar
-from LLM.generator.customLlama import CustomLlama
+#from LLM.generator.customLlama import CustomLlama
 import LLM.constants.constants as constants
 import numpy as np
 
@@ -12,7 +12,7 @@ encoder = SentenceTransformer("all-MiniLM-L6-v2")
 import glob
 filepath = glob.glob("LLM/modelCurrent/*.gguf")[0]
 
-llm = CustomLlama(model_path=filepath, chat_format="chatml", embedding=True, verbose=False, n_ctx=2048 + 1024, n_gpu_layers=-1)
+llm = Llama(model_path=filepath, chat_format="chatml", embedding=True, verbose=False, n_ctx=2048 + 1024, n_gpu_layers=-1)
 
 cache = LlamaRAMCache()
 

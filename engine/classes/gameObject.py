@@ -26,4 +26,4 @@ class GameObject:
         return math.sqrt(dX * dX + dY * dY + dZ * dZ) < 100 and self._locationID == other._locationID
     
     def getIdentifier(self):
-        return '<GameObject: {id}>'.format(id=self._id)
+        return 'GameObject(id: {id})'.format(id=self._id)

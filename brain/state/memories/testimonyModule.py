@@ -25,6 +25,31 @@ class TestimonyModule:
     def getClaims(self):
         return self._testimonyArr
 
+    def selfConsistency(self, knowledgeBase, agentID: int) -> float:
+        score = 0
+        totalConnections = 0
+
+        for id in self._testimonyArr:
+            assertion = knowledgeBase.getExistingClaim(id)
+
+            if assertion.getSourceID() == agentID:
+                connected = {k:v for k,v in knowledgeBase.getConnections(assertion).items() if k in self._testimonyArr}
+
+                for pair in connected.items():
+                    id = pair[0]
+                    strength = float(pair[1])
+
+                    if id == assertion.getID():
+                        continue
+
+                    claim = knowledgeBase.getExistingClaim(id)
+
+                    if claim.getSourceID() == agentID:
+                        score += strength
+                        totalConnections += 1
+        
+        return Degree(int((score/2.0/totalConnections + 0.5) * len(Degree)))
+
     def believes(self, claim: str) -> BeliefClassification:
         claimEmbedding = Generator.encode(Formatter.removeStopWords(claim))
         topEvidence = sorted(self._testimonyArr, key=lambda elem: Generator.encodedSimilarity(elem.getEmbedding(), claimEmbedding))[-5:]
