@@ -2,8 +2,8 @@
 
 ## Setting up the LLM
 1. First install a LLM of your choice. One example that is recommended for ~16GB RAM is https://huggingface.co/TheBloke/OpenHermes-2.5-Mistral-7B-GGUF/tree/main 
-2. Dowload this version: openhermes-2.5-mistral-7b.Q6_K.gguf : Size(5.94GB)
-3. Place the gguf file into NeuroNPC\LLM\modelCurrent
+2. Dowload this version: `openhermes-2.5-mistral-7b.Q6_K.gguf` : Size(5.94GB)
+3. Place the gguf file into `NeuroNPC\LLM\modelCurrent`
 
 ## Installing dependencies
 
