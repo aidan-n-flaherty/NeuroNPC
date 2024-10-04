@@ -12,6 +12,10 @@ Install a virtual environment so that your global installs won't interfere with 
 1. Setup the environment with `python -m venv .venv`.
 2. To enter the virtual environment, run `source .venv/bin/activate`.
 3. To install dependencies, run `pip install -r requirements.txt`.
+4. Installing llama.cpp for specific GPU:
+   a. If you just want to run it on your CPU, install normally like so: `pip install llama_cpp_python==0.3.0`
+   b. Otherwise, to find out which backend to run for your GPU and any other necessary cmake variables to run: https://github.com/ggerganov/llama.cpp?tab=readme-ov-file#supported-backends
+   c. Then, visit https://github.com/abetlen/llama-cpp-python?tab=readme-ov-file#supported-backends to find instructions on how to install for your specific backend
 
 **If you want to install a new package regardless of if you have a virtual environment, run `pip freeze`, copy all of the contents it prints out, and replace everything in `requirements.txt`**
 
@@ -23,3 +27,9 @@ Install a virtual environment so that your global installs won't interfere with 
 4. Run `python simulator/test.py`
 
 If you don't have venv, simply run the `export` or `set` command in your project directory in a terminal.
+
+## Running on a specific GPU
+### Nvidia
+### Intel
+### AMD
+Check out https://github.com/abetlen/llama-cpp-python?tab=readme-ov-file#supported-backends for installation instructions.
