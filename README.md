@@ -27,9 +27,3 @@ Install a virtual environment so that your global installs won't interfere with 
 4. Run `python simulator/test.py`
 
 If you don't have venv, simply run the `export` or `set` command in your project directory in a terminal.
-
-## Running on a specific GPU
-### Nvidia
-### Intel
-### AMD
-Check out https://github.com/abetlen/llama-cpp-python?tab=readme-ov-file#supported-backends for installation instructions.
