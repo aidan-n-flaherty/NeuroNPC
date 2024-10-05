@@ -34,7 +34,7 @@ class EvidenceModule:
                 rankingCategories=" | ".join(["\"{}\"".format(elem.name) for elem in BeliefRanking]), \
                 resultCategories=" | ".join(["\"{}\"".format(elem.name) for elem in BeliefClassification]))
             
-            result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt, "I would categorize the evidence as the following:\n\n"), grammar=LlamaGrammar.from_string(grammar, verbose=False))
+            result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt, "I would categorize the evidence as the following:\n\n"), grammar=grammar)
             returnVal = BeliefClassification[result["choices"][0]["text"].split(": ")[-1]]
 
             return returnVal

@@ -53,7 +53,7 @@ class MemoryModule:
                 grammar = grammar.read().format(agentIDs='({})'.format(' | '.join(['"{}"'.format(memory.getAgentID()) for memory in statements])), statement=Paragraph.getGrammar())
                 print(prompt)
                 print(grammar)
-                result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt), grammar=LlamaGrammar.from_string(grammar, verbose=False))
+                result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt), grammar=grammar)
 
                 for action in Parser.parseFunctionList(result["choices"][0]["text"]):
                     if action.getType() == ActionType("pass"):
@@ -94,7 +94,7 @@ class MemoryModule:
             grammar = grammar.read().format(grammar=Statement.getGrammar())
             print(prompt)
             print(grammar)
-            result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt), grammar=LlamaGrammar.from_string(grammar, verbose=False))
+            result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt), grammar=grammar)
             print(result)
 
             return result["choices"][0]["text"]

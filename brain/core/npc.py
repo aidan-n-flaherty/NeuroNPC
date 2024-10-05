@@ -129,7 +129,7 @@ class NPC(Agent):
                 functionGrammars="\n\n".join(['{} ::= {}'.format(action.replace("_", ""), Grammar.generateGrammar(action, world, self.getID())) for action in ActionManager.getActions()]))
             
             print(Formatter.generatePrompt(prompt))
-            result = Generator.create_completion(Formatter.generatePrompt(prompt), grammar=LlamaGrammar.from_string(grammar, verbose=False))
+            result = Generator.create_completion(Formatter.generatePrompt(prompt), grammar=grammar)
 
             returnVal = Parser.parseFunctionList(result["choices"][0]["text"])
 

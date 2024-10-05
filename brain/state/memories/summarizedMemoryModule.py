@@ -30,7 +30,7 @@ class SummarizedMemoryModule:
             grammar = grammar.read().format(grammar=Statement.getGrammar())
             print(prompt)
             print(grammar)
-            result = generator.create_deterministic_completion(formatter.generatePrompt(prompt), grammar=LlamaGrammar.from_string(grammar, verbose=False))
+            result = generator.create_deterministic_completion(formatter.generatePrompt(prompt), grammar=grammar)
             print(result)
 
             return result["choices"][0]["text"]

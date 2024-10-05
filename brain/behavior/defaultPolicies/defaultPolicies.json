@@ -1,0 +1,10 @@
+[{
+    "self_preservation": {
+        "event": "attack({self})",
+        "response": "attack({caller})"
+    },
+    "hostile": {
+        "event": "see_user(_)",
+        "response": "attack({0})"
+    }
+}]

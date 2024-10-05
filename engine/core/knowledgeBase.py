@@ -53,7 +53,7 @@ class KnowledgeBase:
 
         with open('engine/core/prompts/findDuplicates.txt', 'r') as prompt, open('engine/core/prompts/findDuplicates.gnbf', 'r') as grammar:
             prompt = prompt.read().format(claim=claim, closestMatches="\n".join(["Index {} [similarity {similarity:.2f}]: \"{claim}\"".format(i + 1, similarity=potentialDuplicates[i][0], claim=potentialDuplicates[i][1].getClaim()) for i in range(len(potentialDuplicates))]))
-            grammar = LlamaGrammar.from_string(grammar.read().format(indices=" | ".join(["\"{}\"".format(i + 1) for i in range(len(potentialDuplicates))])), verbose=False)
+            grammar = grammar.read().format(indices=" | ".join(["\"{}\"".format(i + 1) for i in range(len(potentialDuplicates))]))
 
             print(prompt)
             print(grammar)
@@ -76,7 +76,7 @@ class KnowledgeBase:
         
         with open('engine/core/prompts/findContradicting.txt', 'r') as prompt, open('engine/core/prompts/findContradicting.gnbf', 'r') as grammar:
             prompt = prompt.read().format(claim=assertion.getClaim(), closest_matches="\n".join(["{}: \"{}\"".format(i + 1, potentialContradictions[i].getClaim()) for i in range(len(potentialContradictions))]))
-            grammar = LlamaGrammar.from_string(grammar.read().format(grammar=' "\n" '.join(['("\\"{}\\": " strength)'.format(potentialContradictions[i].getClaim()) for i in range(len(potentialContradictions))])), verbose=False)
+            grammar = grammar.read().format(grammar=' "\n" '.join(['("\\"{}\\": " strength)'.format(potentialContradictions[i].getClaim()) for i in range(len(potentialContradictions))]))
 
             out = Generator.create_deterministic_completion(prompt, grammar)
             out = out["choices"][0]["text"]

@@ -63,7 +63,7 @@ class TestimonyModule:
                 rankingCategories=" | ".join(["\"{}\"".format(elem.name) for elem in BeliefRanking]), \
                 resultCategories=" | ".join(["\"{}\"".format(elem.name) for elem in BeliefClassification]))
             
-            result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt, "I would categorize the evidence as the following:\n\n"), grammar=LlamaGrammar.from_string(grammar, verbose=False))
+            result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt, "I would categorize the evidence as the following:\n\n"), grammar=grammar)
             returnVal = BeliefClassification[result["choices"][0]["text"].split(": ")[-1]]
 
             return returnVal
@@ -77,7 +77,7 @@ class TestimonyModule:
 
         with open('brain/state/memories/prompts/findMatch.txt', 'r') as prompt, open('brain/state/memories/prompts/findMatch.gnbf', 'r') as grammar:
             prompt = prompt.read().format(query=query, closest_matches="\n".join(["{}: \"{}\"".format(i + 1, matches[i][1].content) for i in range(len(matches))]))
-            grammar = LlamaGrammar.from_string(grammar.read().format(facts=" | ".join(["\"{}\"".format(i + 1) for i in range(len(matches))])), verbose=False)
+            grammar = grammar.read().format(facts=" | ".join(["\"{}\"".format(i + 1) for i in range(len(matches))]))
 
             out = Generator.create_deterministic_completion(prompt, grammar)
 
