@@ -6,6 +6,9 @@ import nltk
 nltk.download('stopwords')
 nltk.download('maxent_ne_chunker')
 nltk.download('words')
+nltk.download('punkt_tab')
+nltk.download('averaged_perceptron_tagger_eng')
+nltk.download('maxent_ne_chunker_tab')
 
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize

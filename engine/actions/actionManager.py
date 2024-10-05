@@ -10,6 +10,7 @@ from engine.actions.actionDetails import ActionDetails
 from enum import Enum
 import logging
 import json
+import re
 
 supportedActions = {}
 
@@ -29,7 +30,7 @@ for filepath in filepaths:
     if filepath.endswith("__init__.py"):
         continue
 
-    args = filepath.split("/")
+    args = re.split(r'[/\\]', filepath)
     filename = args[-1].split('.py')[0]
 
     module = importlib.import_module('.'.join(args[:-1]) + '.' + filename)
