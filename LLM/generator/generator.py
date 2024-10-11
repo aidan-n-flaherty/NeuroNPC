@@ -30,7 +30,7 @@ llm = None
 if not args.server:
     filepath = glob.glob("LLM/modelCurrent/*.gguf")[0]
 
-    llm = Llama(model_path=filepath, chat_format="chatml", embedding=True, verbose=False, n_ctx=2048 + 1024, n_gpu_layers=-1, logits_all=True)
+    llm = Llama(model_path=filepath, chat_format="chatml", embedding=True, verbose=False, n_ctx=2048 + 1024, n_gpu_layers=-1)
 
     cache = LlamaRAMCache()
 

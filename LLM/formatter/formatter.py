@@ -3,6 +3,8 @@ from brain.state.memories.observedMemory import ObservedMemory
 import time
 import re
 import nltk
+
+#Added to let test.py file run
 nltk.download('stopwords')
 nltk.download('maxent_ne_chunker')
 nltk.download('words')
@@ -15,6 +17,7 @@ from nltk.tokenize import word_tokenize
 from nltk import ne_chunk, pos_tag, word_tokenize
 from nltk.tree import Tree
 
+#set of words that are not considered in our LLM(stopwords)
 stop_words = set(stopwords.words('english'))
 
 def getModelName():
@@ -29,6 +32,7 @@ def removeStopWords(text: str):
     
     return text
 
+#replace a certain match in text with the name of NPC/User
 def resolveNames(text: str, world):
     for match in re.findall(r"<@[0-9]+>", text):
         id = re.sub("[^0-9]", "", match)
@@ -51,6 +55,13 @@ def formatTags(text: str, world):
     
     return text
 
+#format of history. 
+#Each memory starts with <|im_start|> and ends with <|im_end|>
+#Sample no memory:
+#<|im_start|>{author}
+#Here's the last thing you remember:
+#<could be something here still look at code to finish comment>
+#<|im_end|>
 def formatHistory(agentID: int, summarizedMemory, observedMemoryModule):
     history = ""
 
@@ -89,6 +100,8 @@ def formatHistory(agentID: int, summarizedMemory, observedMemoryModule):
 def generatePrompt(prompt: str, initialCompletion=""):
     return "<|im_start|>{narrator}\n{prompt}<|im_end|>\n<|im_start|>{model}\n{initialCompletion}".format(narrator=NARRATOR_NAME, prompt=prompt, model=MODEL_NAME, initialCompletion=initialCompletion)
 
+#Calculate the time in year/month/day/hour/minute/secound format based on how much time has elapsed.
+#only returns the highest TimeUnit and a value associated with that. (ex. 5 years)
 def timeToString(t: int):
     timeDiff = t - time.time()
 

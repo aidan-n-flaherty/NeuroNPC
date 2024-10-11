@@ -1,3 +1,6 @@
+#DO NOT USE OR COMMENT- OUTDATED CLASS
+#Delete file after confirmed Safe
+
 from __future__ import annotations
 from llama_cpp import Llama, StoppingCriteriaList, LogitsProcessorList, LlamaGrammar, CreateCompletionResponse, CreateCompletionStreamResponse
 
