@@ -1,16 +1,17 @@
-from engine.actions.actionType import ActionType
+from engine.stimuli.actionType import ActionType
+from engine.stimuli.eventType import EventType
 
-class ActionDetails:
-    def __init__(self, actionType: ActionType, parameters, documentation: str, description: str, tags: list[str], classifications: list[str]) -> None:
-        self._actionType = actionType
+class NotificationDetails:
+    def __init__(self, actionType: ActionType | EventType, parameters, documentation: str, description: str, tags: list[str], classifications: list[str]) -> None:
+        self._notificationType = actionType
         self._parameters = parameters
         self._documentation = documentation
         self._description = description
         self._tags = tags
         self._classifications = classifications
     
-    def getActionType(self):
-        return self._actionType
+    def getType(self) -> ActionType | EventType:
+        return self._notificationType
     
     def getParameters(self):
         return self._parameters

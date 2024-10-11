@@ -2,4 +2,4 @@ You observe the following exchange:
 
 {conversation}
 
-You have identified "{claim}" as an assertion. Using the context above, extract a single sentence that summarizes the assertion being made as briefly as possible. Include all relevant user or item tags (for example, label a user with ID 123456 as <@123456>). Do not explain, only output a single sentence.
+You have identified "{claim}" as an assertion. Using the context above, extract a single sentence that summarizes the assertion being made as briefly as possible. Include all relevant user or item tags (for example, label a user with ID 123456 as <@123456>). Do not explain or reference the overall conversation, only output a brief assertion. Avoid extracting anything but "{claim}" for the assertion.

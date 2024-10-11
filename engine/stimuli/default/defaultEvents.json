@@ -1,0 +1,14 @@
+[{
+    "enter_area": {
+        "parameters": { },
+        "description": "",
+        "documentation": "Emitted by a user entering your area of perception.",
+        "tags": []
+    },
+    "leave_area": {
+        "parameters": { },
+        "description": "",
+        "documentation": "Emitted by a user leaving your area of perception.",
+        "tags": []
+    }
+}]

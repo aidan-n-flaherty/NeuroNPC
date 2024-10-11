@@ -3,13 +3,13 @@ import LLM.formatter.formatter as Formatter #This is where LLM outpput is format
 from engine.classes.agent import Agent      #This is the User
 from brain.core.npc import NPC              #This is the NPC
 from engine.core.world import World         #This is where KnowledgeBases, NPCS, Items, locations are initiated
-from engine.actions.action import Action
-import engine.actions.actionManager as ActionManager
+from engine.stimuli.notification import Notification
+import engine.stimuli.notificationModule as NotificationModule
 from engine.classes.item import Item
 from engine.classes.location import Location
 from brain.state.personality.personalityModule import PersonalityModule
 from engine.enums.degree import Degree
-from engine.actions.actionType import ActionType
+from engine.stimuli.actionType import ActionType
 
 #Create world onject
 world = World()
@@ -36,7 +36,7 @@ world.getAgent(1).conversationStart(world.getAgent(0))
 #print([elem.getName() + ", " + str(elem.getParameters()) for elem in parser.parseFunctionList('say(\"hello there!\")')])
 print(world.getInteractableAgents(0))
 
-#world.emitAction(2, Action("SAY", ["Hello."], "", ActionManager.getDescription("SAY")))
+#world.emitAction(2, Notification("SAY", ["Hello."], "", NotificationModule.getDescription("SAY")))
 
 while True:
     user = input('>>> ')
@@ -45,7 +45,7 @@ while True:
     try:
         action = Parser.parseFunctionCall(user)
     except:
-        action = Action(ActionType("say"), [Formatter.formatTags(user, world)], "", ActionManager.getDescription(ActionType("say")))
+        action = Notification(ActionType("say"), [Formatter.formatTags(user, world)], "", NotificationModule.getDescription(ActionType("say")))
     
     world.emitAction(0, action)
 

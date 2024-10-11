@@ -5,14 +5,19 @@ from engine.types.locationID import LocationID
 from engine.types.itemID import ItemID
 from engine.types.inventoryItemID import InventoryItemID
 from brain.state.emotions.emotionModule import Emotion, Degree
-from engine.actions.actionType import ActionType
-from engine.actions.actionDetails import ActionDetails
+from engine.stimuli.actionType import ActionType
+from engine.stimuli.eventType import EventType
+from engine.stimuli.notificationDetails import NotificationDetails
 from enum import Enum
 import logging
 import json
 import re
 
 supportedActions = {}
+
+supportedEvents = {}
+
+supportedNotifications = {}
 
 supportedClasses = {
     "str": str,
@@ -54,7 +59,7 @@ def substituteClasses(json):
     else:
         return json
 
-with open("engine/actions/default/defaultActions.json", "r") as file:
+with open("engine/stimuli/default/defaultEvents.json", "r") as file:
     obj = json.loads(file.read())
     for action in obj[0]:
         content = obj[0][action]
@@ -64,10 +69,31 @@ with open("engine/actions/default/defaultActions.json", "r") as file:
         tags = [tag.upper() for tag in content["tags"]]
         classifications = [classification.upper() for classification in content["classification"]] if "classification" in content else []
 
-        supportedActions[ActionType(action)] = ActionDetails(ActionType(action), substituteClasses(parameters), documentation, description, tags, classifications)
+        supportedEvents[EventType(action)] = NotificationDetails(EventType(action), substituteClasses(parameters), documentation, description, tags, classifications)
+        supportedNotifications[EventType(action)] = supportedEvents[EventType(action)]
+
+
+with open("engine/stimuli/default/defaultActions.json", "r") as file:
+    obj = json.loads(file.read())
+    for action in obj[0]:
+        content = obj[0][action]
+        parameters = content["parameters"]
+        documentation = content["documentation"]
+        description = content["description"]
+        tags = [tag.upper() for tag in content["tags"]]
+        classifications = [classification.upper() for classification in content["classification"]] if "classification" in content else []
+
+        supportedActions[ActionType(action)] = NotificationDetails(ActionType(action), substituteClasses(parameters), documentation, description, tags, classifications)
+        supportedNotifications[EventType(action)] = supportedActions[EventType(action)]
+
+def getNotifications() -> list[EventType | ActionType]:
+    return supportedNotifications.keys()
 
 def getActions() -> list[ActionType]:
     return supportedActions.keys()
+
+def getEvents() -> list[EventType]:
+    return supportedEvents.keys()
 
 def getMainActions() -> list[ActionType]:
     return [action for action, details in supportedActions.items() if details.hasTag("CORE") and details.hasTag("EXTERNAL")]
@@ -81,27 +107,27 @@ def getMentalActions() -> list[ActionType]:
 def getActionDescriptions() -> list[str]:
     return [getFunctionStr(action) for action, details in supportedActions.items() if details.hasTag("EXTERNAL")]
 
-def shouldEmit(action: ActionType):
-    return supportedActions[action].hasTag("EMIT")
+def shouldEmit(notificationType: ActionType | EventType):
+    return supportedNotifications[notificationType].hasTag("EMIT")
 
-def isHostile(action: ActionType):
-    return supportedActions[action].hasClassification("HOSTILE")
+def isHostile(notificationType: ActionType | EventType):
+    return supportedNotifications[notificationType].hasClassification("HOSTILE")
 
-def getParameterTypes(action: ActionType):
-    return [parameter for parameter in supportedActions[action].getParameters().values()]
+def getParameterTypes(notificationType: ActionType | EventType):
+    return [parameter for parameter in supportedNotifications[notificationType].getParameters().values()]
 
-def getFunctionStr(action: ActionType):
-    return "{}({})".format(str(action), ", ".join(["{}: {}".format(param, paramType.__name__) for param, paramType in supportedActions[action].getParameters().items()]))
+def getFunctionStr(notificationType: ActionType | EventType):
+    return "{}({})".format(str(notificationType), ", ".join(["{}: {}".format(param, paramType.__name__) for param, paramType in supportedNotifications[notificationType].getParameters().items()]))
 
-def validAction(action: ActionType):
-    if action in supportedActions:
+def validAction(notificationType: ActionType | EventType):
+    if notificationType in supportedNotifications:
         return True
     else:
-        print("ERROR: {} is not a valid type".format(action))
+        print("ERROR: {} is not a valid type".format(notificationType))
         return False
 
-def getDescription(action: ActionType):
-    return supportedActions[action].getDescription()
+def getDescription(notificationType: ActionType | EventType):
+    return supportedNotifications[notificationType].getDescription()
 
-def getDocumentation(action: ActionType):
-    return supportedActions[action].getDocumentation()
+def getDocumentation(notificationType: ActionType | EventType):
+    return supportedNotifications[notificationType].getDocumentation()

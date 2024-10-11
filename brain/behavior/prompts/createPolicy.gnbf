@@ -1,0 +1,9 @@
+root ::= (actionResponse ("\n" actionResponse)*)
+
+actionResponse ::= "if " (event | action) " then " action
+
+event ::= {eventList}
+
+action ::= {actionList}
+
+{functionGrammars}

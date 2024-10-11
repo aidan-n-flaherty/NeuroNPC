@@ -1,7 +1,7 @@
 from engine.classes.agent import Agent
 from engine.classes.item import Item
 from engine.classes.location import Location
-from engine.actions.action import Action
+from engine.stimuli.notification import Notification
 from engine.core.knowledgeBase import KnowledgeBase
 from engine.classes.assertion import Assertion
 import LLM.generator.generator as Generator
@@ -86,12 +86,12 @@ class World:
         
         return interactable
     
-    def emitAction(self, agentID: int, action: Action) -> bool:
+    def emitAction(self, agentID: int, notification: Notification) -> bool:
         actionAgent = self._agents[agentID]
         
-        description = action.getDescription(self, agentID)
+        description = notification.getDescription(self, agentID)
         encoding = Generator.encode(description)
 
         for (aID, agent) in self._agents.items():
             if aID != agentID and agent.isArtificial():
-                print([str(a) for a in agent.react(self, actionAgent, action, time.time(), description, encoding)])
+                print([str(a) for a in agent.react(self, actionAgent, notification, time.time(), description, encoding)])

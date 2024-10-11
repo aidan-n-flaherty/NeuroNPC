@@ -1,10 +1,16 @@
-from engine.actions.action import Action
+from engine.stimuli.notification import Notification
 from engine.classes.agent import Agent
-from brain.behavior.policy import Policy
-from engine.actions.actionType import ActionType
-import engine.actions.actionManager as ActionManager
+from engine.types.agentID import AgentID
+from engine.stimuli.actionType import ActionType
+import engine.stimuli.notificationModule as NotificationModule
 from brain.state.personality.personalityModule import PersonalityModule
 from brain.state.perceptions.perceptionModule import PerceptionModule
+import LLM.constants.constants as LLMConstants
+import LLM.formatter.grammar as Grammar
+import LLM.formatter.formatter as Formatter
+import LLM.generator.generator as Generator
+import LLM.parser.parser as Parser
+from brain.behavior.policy import Policy
 
 class BehaviorModule:
     def __init__(self):
@@ -17,22 +23,49 @@ class BehaviorModule:
     def isConversing(self):
         return not self._conversingWith is None
     
-    def addPolicy(self, policy: Policy):
-        self._policies.add(policy)
+    def getReplacements(self):
+        return [(AgentID, "self"), (AgentID, "caller"), (None, "_")]
+    
+    def addPolicy(self, agent, policy: str, world):
+        with open('brain/behavior/prompts/createPolicy.txt', 'r') as prompt, open('brain/behavior/prompts/createPolicy.gnbf', 'r') as grammar:
+            prompt = prompt.read().format(\
+                policy=policy,
+                identifier=agent.getIdentifier() + " (name: " + agent.getName() + ")",
+                narrator=LLMConstants.NARRATOR_NAME, \
+                actionDescriptions="\n".join(["{}: {}".format(NotificationModule.getFunctionStr(action), NotificationModule.getDocumentation(action)) for action in NotificationModule.getActions()]), \
+                eventDescriptions="\n".join(["{}: {}".format(NotificationModule.getFunctionStr(event), NotificationModule.getDocumentation(event)) for event in NotificationModule.getEvents()]))
+            
+            grammar = grammar.read().format(\
+                eventList=" | ".join([event.replace("_", "") for event in NotificationModule.getEvents() if not Grammar.grammarMissing(event, world, agent.getID(), self.getReplacements())]), \
+                actionList=" | ".join([action.replace("_", "") for action in NotificationModule.getActions() if not Grammar.grammarMissing(action, world, agent.getID(), self.getReplacements())]), \
+                functionGrammars="\n\n".join(['{} ::= {}'.format(func.replace("_", ""), Grammar.generateGrammar(func, world, agent.getID(), self.getReplacements())) for func in NotificationModule.getNotifications()]))
+            
+            print(Formatter.generatePrompt(prompt))
+            result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt), grammar=grammar)
+
+            for policyStr in result["choices"][0]["text"].split("\n"):
+                print(policyStr)
+                self._policies.add(policyStr)
 
     def getPolicies(self):
         return self._policies
+
+    def getReaction(self, selfAgent: Agent, personalityModule: PersonalityModule, perceptionModule: PerceptionModule, agent: Agent, notification: Notification) -> Notification:
+        if agent is None:
+            return Notification(ActionType("recalculate"))
+        
+        for policyStr in self._policies:
+            policyStr = policyStr.replace("self", str(selfAgent.getID())).replace("caller", str(agent.getID()))
+            reactions = Parser.parseReactionList(policyStr)
+
+            policy = Policy(reactions[0][0].getType(), reactions[0][0].getParameters(), reactions[0][1].getType(), reactions[0][1].getParameters(), "")
+
+            if policy.matches(notification):
+                return Notification(policy.getResponseType(), policy.getResponseParameters(), policyStr[3:].split(" then ")[1], NotificationModule.getDescription(reactions[0][1].getType()))
     
-    def hasPolicy(self, policy: Policy):
-        return policy in self._policies
-
-    def getReaction(self, personalityModule: PersonalityModule, perceptionModule: PerceptionModule, agent: Agent, action: Action) -> Action:
         if agent is None or self._conversingWith == agent.getID():
-            return Action(ActionType("recalculate"))
+            return Notification(ActionType("recalculate"))
         
-        if self.hasPolicy(Policy("self_preservation")) and ActionManager.isHostile(action.getType()):
-            return Action(ActionType("attack"), [agent.getID()])
 
-        
 
         return None

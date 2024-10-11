@@ -19,4 +19,4 @@ class PerceptionModule:
         if agentID in self._perceptions:
             return self._perceptions[agentID].getIdentifier()
                 
-        return "The person (id: {}) is a stranger to you.".format(agentID)
+        return "<@{}> is a stranger to you.".format(agentID)

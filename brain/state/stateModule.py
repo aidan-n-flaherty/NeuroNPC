@@ -1,5 +1,5 @@
-from brain.planning.routine.actionResponse import ActionResponse
-from engine.actions.action import Action
+from brain.planning.routine.actionResponse import NotificationResponse
+from engine.stimuli.notification import Notification
 from engine.classes.agent import Agent
 from brain.state.beliefs.beliefModule import BeliefModule
 from brain.state.emotions.emotionModule import EmotionModule

@@ -27,7 +27,7 @@
     "accompany_user": {
         "parameters": { "user_id": "AgentID" },
         "description": "{agent} is now following {0}.",
-        "documentation": "Use this only when you would like to accompany the user to a destination, and are okay with being led anywhere.",
+        "documentation": "Use this to follow a user. Avoid using this if they do not ask you to follow them.",
         "tags": ["EXTERNAL", "CORE", "EMITTED"]
     },
     "raise_emotion": {

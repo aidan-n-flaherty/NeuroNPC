@@ -5,4 +5,4 @@ Here is a list of claims in your database:
 
 You have received a new claim "{claim}"
 
-For each claim in your database, assign a floating point number in the range -100% to 100% to express its compatibility with "{claim}" (i.e. the logical conjunction of the two).
+For each claim in your database, assign a percent in the range -100% to 100% to express its compatibility with "{claim}" (i.e. the logical conjunction of the two). Values close to 0% are for cases where the facts are not related and don't support or conflict each other. 100% are for facts that are more likely when combined, and -100% is for facts that contradict each other. You should usually assign each sentence a different probability.

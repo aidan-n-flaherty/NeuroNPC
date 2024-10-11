@@ -1,17 +1,18 @@
 from engine.types.agentID import AgentID
 from engine.types.itemID import ItemID
+from engine.stimuli.actionType import ActionType
 from engine.stimuli.eventType import EventType
 from enum import Enum
 
-class Event:
-    def __init__(self, eventType: EventType, actionParameters=[], unparsedStr="", descriptionStr="") -> None:
-        self._eventType = eventType
+class Notification:
+    def __init__(self, notificationType: ActionType | EventType, actionParameters=[], unparsedStr="", descriptionStr="") -> None:
+        self._notificationType = notificationType
         self._notificationParameters = actionParameters
         self._descriptionStr = descriptionStr
         self._unparsedStr = unparsedStr
 
-    def getType(self) -> EventType:
-        return self._eventType
+    def getType(self) -> ActionType | EventType:
+        return self._notificationType
 
     def getParameters(self) -> list:
         return self._notificationParameters
@@ -38,4 +39,4 @@ class Event:
         return self._unparsedStr
 
     def __str__(self):
-        return "({}, {}, {})".format(self._eventType, self._notificationParameters, self._descriptionStr)
+        return "({}, {}, {})".format(self._notificationType, self._notificationParameters, self._descriptionStr)

@@ -5,13 +5,13 @@ from brain.state.memories.summarizedMemory import SummarizedMemory
 from brain.state.memories.evidenceModule import EvidenceModule
 from brain.state.memories.testimonyModule import TestimonyModule
 from brain.state.memories.evidence import Evidence
-import engine.actions.actionManager as ActionManager
+import engine.stimuli.notificationModule as NotificationModule
 import LLM.generator.generator as Generator
 import LLM.formatter.formatter as Formatter
 import LLM.parser.parser as Parser
 from engine.types.statement import Statement
 from engine.types.paragraph import Paragraph
-from engine.actions.actionType import ActionType
+from engine.stimuli.actionType import ActionType
 import brain.constants.constants as Constants
 import time
 from llama_cpp import LlamaGrammar
@@ -56,12 +56,12 @@ class MemoryModule:
                 result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt), grammar=grammar)
 
                 for action in Parser.parseFunctionList(result["choices"][0]["text"]):
-                    if action.getType() == ActionType("pass"):
+                    if notification.getType() == ActionType("pass"):
                         break
-                    elif action.getType() == ActionType("collect_claim"):
-                        self.addTestimony(knowledgeBase, action.getParameter(1), action.getParameter(0), 1)
-                    elif action.getType() == ActionType("collect_evidence"):
-                        self.addEvidence(Evidence(time.time(), agent.getID(), action.getParameter(0)))
+                    elif notification.getType() == ActionType("collect_claim"):
+                        self.addTestimony(knowledgeBase, notification.getParameter(1), notification.getParameter(0), 1)
+                    elif notification.getType() == ActionType("collect_evidence"):
+                        self.addEvidence(Evidence(time.time(), agent.getID(), notification.getParameter(0)))
                 
                 print(self._testimonyModule._testimonyArr)"""
             
@@ -85,7 +85,7 @@ class MemoryModule:
 
         topSummarizedMemories = sorted(self._summarizedMemoryModule.getAllMemories(), key=lambda elem: Generator.encodedSimilarity(elem.getEmbedding(), queryEmbedding))[-3:]
 
-        topObservedMemories = sorted([memory for memory in self._observedMemoryModule.getLongTermMemories() if memory.getAction().getType() not in ActionManager.getMentalActions()], key=lambda elem: Generator.encodedSimilarity(elem.getEmbedding(), queryEmbedding))[-3:]
+        topObservedMemories = sorted([memory for memory in self._observedMemoryModule.getLongTermMemories() if memory.getAction().getType() not in NotificationModule.getMentalActions()], key=lambda elem: Generator.encodedSimilarity(elem.getEmbedding(), queryEmbedding))[-3:]
 
         topEvidence = sorted(self._evidenceModule.getEvidence(), key=lambda elem: Generator.encodedSimilarity(elem.getEmbedding(), queryEmbedding))[-3:]
 

@@ -3,15 +3,15 @@ import logging
 from typing import cast
 from enum import Enum
 
-from engine.actions.action import Action
-from engine.actions.actionType import ActionType
-import engine.actions.actionManager as ActionManager
+from engine.stimuli.notification import Notification
+from engine.stimuli.actionType import ActionType
+import engine.stimuli.notificationModule as NotificationModule
 
 # expects a string in the format:
 #   funcA(argA, argB)
 #   funcB(argA, argB, argC)
 #   funcC()
-def parseFunctionList(functionListStr: str) -> list[Action]:
+def parseFunctionList(functionListStr: str) -> list[Notification]:
     functionListStr = functionListStr.strip()
 
     functionCalls = functionListStr.split("\n")
@@ -23,9 +23,22 @@ def parseFunctionList(functionListStr: str) -> list[Action]:
     
     return returnCalls
 
+def parseReactionList(functionReactionStr: str) -> list:
+    functionReactionStr = functionReactionStr.strip()
+
+    functionCalls = functionReactionStr.split("\n")
+
+    returnCalls = []
+
+    for functionCall in functionCalls:
+        functionCalls = functionCall[3:].split(" then ")
+        returnCalls.append((parseFunctionCall(functionCalls[0]), parseFunctionCall(functionCalls[1])))
+    
+    return returnCalls
+
 # expects a string in the format:
 #   funcA(argA, argB, argC)
-def parseFunctionCall(functionCallStr: str) -> Action:
+def parseFunctionCall(functionCallStr: str) -> Notification:
     splitIndex = functionCallStr.index('(')
 
     if not splitIndex:
@@ -33,14 +46,14 @@ def parseFunctionCall(functionCallStr: str) -> Action:
     
     functionName = functionCallStr[0:splitIndex]
 
-    if not ActionManager.validAction(ActionType(functionName)):
+    if not NotificationModule.validAction(ActionType(functionName)):
         return None
 
     print(functionCallStr)
     print(functionCallStr[splitIndex:])
-    functionArgs = parse_array(functionCallStr[splitIndex:], ActionManager.getParameterTypes(ActionType(functionName)))
+    functionArgs = parse_array(functionCallStr[splitIndex:], NotificationModule.getParameterTypes(ActionType(functionName)))
 
-    return Action(functionName, functionArgs, functionCallStr, ActionManager.getDescription(ActionType(functionName)))
+    return Notification(functionName, functionArgs, functionCallStr, NotificationModule.getDescription(ActionType(functionName)))
 
 def is_array(argStr: str):
     if not argStr:
@@ -107,6 +120,6 @@ def parse_array(arrayStr: str, typeArr):
         while is_string(returnVal[i]):
             returnVal[i] = returnVal[i][1:-1]
 
-        returnVal[i] = parse_array(returnVal[i], typeCast) if is_array(returnVal[i]) else typeCast[returnVal[i]] if issubclass(typeCast, Enum) else typeCast(returnVal[i]) if returnVal[i] != "_" else None
+        returnVal[i] = (parse_array(returnVal[i], typeCast) if is_array(returnVal[i]) else typeCast[returnVal[i].upper()] if issubclass(typeCast, Enum) else typeCast(returnVal[i])) if returnVal[i] != "_" else None
 
     return returnVal

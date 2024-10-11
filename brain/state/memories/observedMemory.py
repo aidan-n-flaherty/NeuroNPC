@@ -1,23 +1,23 @@
 import LLM.generator.generator as Generator
 import LLM.formatter.formatter as Formatter
-from engine.actions.action import Action
+from engine.stimuli.notification import Notification
 
 class ObservedMemory:
-    def __init__(self, timestamp: int, agentID: int, action: Action, selfDescription: str, description: str, observedDescription: str, embedding, note=None) -> None:
+    def __init__(self, timestamp: int, agentID: int, action: Notification, selfDescription: str, description: str, observedDescription: str, embedding, note=None) -> None:
         self._timestamp = timestamp
         self._agentID = agentID
         self._description = description
         self._selfDescription = selfDescription
         self._observedDescription = observedDescription
         self._embedding = embedding
-        self._action = action
+        self._notification = action
         self._note = note
 
     def setNote(self, note: str):
         self._note = note
 
     def getAction(self):
-        return self._action
+        return self._notification
 
     def getDescription(self):
         return self._description
@@ -26,7 +26,7 @@ class ObservedMemory:
         return self._observedDescription
     
     def getFunctionCall(self):
-        return self._action.getFunctionCall()
+        return self._notification.getFunctionCall()
     
     def getSelfDescription(self):
         return self._selfDescription
