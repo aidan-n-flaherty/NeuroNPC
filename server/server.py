@@ -1,3 +1,5 @@
+#OUTDATED- DO NOT USE OR COMMENT
+
 import socket
 import server.socketManager as socketManager
 from engine.core.world import World
