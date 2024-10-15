@@ -1,5 +1,6 @@
 from engine.classes.agent import Agent
 from engine.classes.item import Item
+from engine.classes.item import ShopItem #added here by chriss - testing shop items
 from engine.classes.location import Location
 from engine.stimuli.notification import Notification
 from engine.core.knowledgeBase import KnowledgeBase
@@ -45,6 +46,10 @@ class World:
 
     def registerItem(self, item: Item):
         self._items[item.getID()] = item
+    
+    def registerShopItem(self, item: ShopItem):
+        self._items[item.getID()] = item
+
     
     def registerLocation(self, location: Location):
         self._locations[location.getID()] = location
