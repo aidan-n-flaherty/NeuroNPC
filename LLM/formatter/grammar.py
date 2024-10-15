@@ -16,7 +16,7 @@ def generateParameterGrammar(parameterTypes: list, world, agentID: int, substitu
     return "\", \" ".join([generateParameterGrammar(paramType, world, agentID, substitutions) if type(paramType) is list else generateParamOptions(paramType, world, agentID, substitutions) for paramType in parameterTypes])
 
 def generateParamOptions(parameterType, world, agentID: int, substitutions: list):
-    formattedStr = '({} | ' + ' | '.join(['"{}"'.format(substitution[1]) for substitution in substitutions if not substitution[0] or issubclass(parameterType, substitution[0])]) + ')' if substitutions else '{}'
+    formattedStr = '({} | ' + ' | '.join(['"{}"'.format(substitution[1]) for substitution in substitutions if not substitution[0] or issubclass(parameterType, substitution[0])]) + ')' if substitutions and any([True for substitution in substitutions if not substitution[0] or issubclass(parameterType, substitution[0])]) else '{}'
 
     if parameterType in customTypes:
         return formattedStr.format(parameterType.getGrammar())

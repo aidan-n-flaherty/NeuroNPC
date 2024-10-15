@@ -1,3 +1,4 @@
 MENTAL_NOTE_LIMIT = 256 #256 chars
 HISTORY_LIMIT = 256     #256 tokens
 NOTE_LIMIT = 256        #256 notes
+DAYLIGHT_CYCLE = 24 * 60 * 60

@@ -10,13 +10,13 @@ In order to interact with the world, you must call Python functions and provide 
 
 You may place the following keywords in place of AgentID arguments:
 self: refers to you, the NPC.
-caller: refers to the agent who took the action or produced the event.
+caller: refers to the agent or item who took the action or produced the event.
 Try to use self and caller whenever possible.
 
-You may also use the following for variable arguments:
+You may also use the following for variable arguments for the if condition (not the then condition):
 _: accept any value for a function parameter.
 
-Please represent the target behavior using the following format: if <action or event some other agent runs> then <your, the NPC's, reaction>
+Please represent the target behavior using the following format: if <action or event some other agent/item runs> then <your, the NPC's, reaction>
 
 Note that the first part of the if statement is not an action you perform, but instead something by another agent that you observe. The second part of the if statement is the function that you run.
 

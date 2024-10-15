@@ -10,5 +10,11 @@
         "description": "",
         "documentation": "Emitted by a user leaving your area of perception.",
         "tags": []
+    },
+    "item_appear": {
+        "parameters": { },
+        "description": "",
+        "documentation": "Emitted by an item entering your area of perception.",
+        "tags": []
     }
 }]

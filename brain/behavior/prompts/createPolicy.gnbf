@@ -4,6 +4,10 @@ actionResponse ::= "if " (event | action) " then " action
 
 event ::= {eventList}
 
+actionEvent ::= {actionEventList}
+
 action ::= {actionList}
+
+{functionEventGrammars}
 
 {functionGrammars}

@@ -1,6 +1,7 @@
 from engine.stimuli.notification import Notification
 from engine.classes.agent import Agent
 from engine.types.agentID import AgentID
+from engine.types.itemID import ItemID
 from engine.stimuli.actionType import ActionType
 import engine.stimuli.notificationModule as NotificationModule
 from brain.state.personality.personalityModule import PersonalityModule
@@ -16,6 +17,7 @@ class BehaviorModule:
     def __init__(self):
         self._conversingWith = None
         self._policies = set()
+        self._scheduledBehaviors = set()
 
     def startConversingWith(self, agent: Agent):
         self._conversingWith = agent.getID()
@@ -24,7 +26,7 @@ class BehaviorModule:
         return not self._conversingWith is None
     
     def getReplacements(self):
-        return [(AgentID, "self"), (AgentID, "caller"), (None, "_")]
+        return [(AgentID, "self"), (AgentID, "caller"), (ItemID, "caller"), (None, "_")]
     
     def addPolicy(self, agent, policy: str, world):
         with open('brain/behavior/prompts/createPolicy.txt', 'r') as prompt, open('brain/behavior/prompts/createPolicy.gnbf', 'r') as grammar:
@@ -38,9 +40,10 @@ class BehaviorModule:
             grammar = grammar.read().format(\
                 eventList=" | ".join([event.replace("_", "") for event in NotificationModule.getEvents() if not Grammar.grammarMissing(event, world, agent.getID(), self.getReplacements())]), \
                 actionList=" | ".join([action.replace("_", "") for action in NotificationModule.getActions() if not Grammar.grammarMissing(action, world, agent.getID(), self.getReplacements())]), \
-                functionGrammars="\n\n".join(['{} ::= {}'.format(func.replace("_", ""), Grammar.generateGrammar(func, world, agent.getID(), self.getReplacements())) for func in NotificationModule.getNotifications()]))
+                actionEventList=" | ".join([action.replace("_", "") + "Event" for action in NotificationModule.getActions() if not Grammar.grammarMissing(action, world, agent.getID(), self.getReplacements())]), \
+                functionGrammars="\n\n".join(['{} ::= {}'.format(func.replace("_", ""), Grammar.generateGrammar(func, world, agent.getID(), [pair for pair in self.getReplacements() if pair[1] != '_'])) for func in NotificationModule.getNotifications()]), \
+                functionEventGrammars="\n\n".join(['{} ::= {}'.format(func.replace("_", "") + "Event", Grammar.generateGrammar(func, world, agent.getID(), self.getReplacements())) for func in NotificationModule.getNotifications()]))
             
-            print(Formatter.generatePrompt(prompt))
             result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt), grammar=grammar)
 
             for policyStr in result["choices"][0]["text"].split("\n"):
@@ -65,7 +68,17 @@ class BehaviorModule:
     
         if agent is None or self._conversingWith == agent.getID():
             return Notification(ActionType("recalculate"))
-        
-
 
         return None
+    
+    def getScheduledActions(self, time: int):
+        actions = []
+
+        for scheduledBehavior in self._scheduledBehaviors:
+            if scheduledBehavior.getTime() <= time and not scheduledBehavior.getActivated():
+                action = Notification(ActionType(scheduledBehavior.getActionType(), scheduledBehavior.getActionParameters()))
+                scheduledBehavior.activate()
+
+                actions.append(action)
+        
+        return actions
