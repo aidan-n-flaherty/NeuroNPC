@@ -39,4 +39,9 @@ class Container(GameObject):
         self._isLocked = value
     
     def getIdentifier(self) -> str:
-        return 'Container(name: "{name}", list of item IDS in Container: "{itemsInContainer}", container is locked: "{isLocked}", id: {id})'.format(name=self._name, itemsInContainer = self._itemsInContainer, isLocked=self._isLocked, id = self.getID())
+        #If locked NPC not able to see IDS in container
+        if(self.isLocked()):
+            return 'Container(name: "{name}", list of item IDS in Container: "UNKNOWN: Container Locked", container is locked: "{isLocked}", id: {id})'.format(name=self._name, isLocked=self._isLocked, id = self.getID())
+        #If Unlocked Npc can see the IDS in container
+        else:
+            return 'Container(name: "{name}", list of item IDS in Container: "{itemsInContainer}", container is locked: "{isLocked}", id: {id})'.format(name=self._name, itemsInContainer = self._itemsInContainer, isLocked=self._isLocked, id = self.getID())
