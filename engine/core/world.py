@@ -1,6 +1,7 @@
 from engine.classes.agent import Agent
 from engine.classes.item import Item
 from engine.classes.item import ShopItem #added here by chriss - testing shop items
+from engine.classes.container import Container  #added by chris - testing containers
 from engine.classes.location import Location
 from engine.stimuli.notification import Notification
 from engine.core.knowledgeBase import KnowledgeBase
@@ -48,6 +49,9 @@ class World:
         self._items[item.getID()] = item
     
     def registerShopItem(self, item: ShopItem):
+        self._items[item.getID()] = item
+    
+    def registerContainer(self, item: Container):
         self._items[item.getID()] = item
 
     
