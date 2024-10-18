@@ -7,6 +7,7 @@ from engine.stimuli.notification import Notification
 import engine.stimuli.notificationModule as NotificationModule
 from engine.classes.item import Item
 from engine.classes.item import ShopItem    #This is what I added to Test
+from engine.classes.container import Container
 from engine.classes.location import Location
 from brain.state.personality.personalityModule import PersonalityModule
 from engine.enums.degree import Degree
@@ -16,13 +17,17 @@ from engine.stimuli.actionType import ActionType
 world = World()
 
 #registerItem(Item Object) -- Item Object created by: Item(int ID, string name_and_cost, int location_of_item_ID, vector coordinate)
-world.registerItem(ShopItem(2, 'a mug of beer', 10, 5, (0, 0, 0)))
-world.registerItem(ShopItem(3, 'a sword', 50, 5, (0, 0, 0)))
+world.registerShopItem(ShopItem(2, 'a mug of beer', 10, 5, (0, 0, 0)))
+world.registerShopItem(ShopItem(3, 'a sword', 50, 5, (0, 0, 0)))
 world.registerItem(Item(4, 'tax returns: unsellable', 5, (0, 0, 0)))
-world.registerItem(Item(7, 'a pile of dog excrement', 6, (0, 0, 0)))
-world.registerItem(Item(8, 'a pouch of gold coins', 6, (0, 0, 0)))
 world.registerShopItem(ShopItem(9,'health potion that restores all your health', 50, 5, (0, 0, 0)))
 world.registerShopItem(ShopItem(10,'damage potion that kills everything it touches', 250, 5, (0, 0, 0)))
+
+#make chest in storage closet(id:6)
+world.registerContainer(Container(11,5,[7,8],False,'chest in Storage Closet',6,(0, 0, 0)))
+#Put the below items in chest
+world.registerItem(Item(7, 'a pile of dog excrement', 11, (0, 0, 0)))
+world.registerItem(Item(8, 'a pouch of gold coins', 11, (0, 0, 0)))
 
 #registerAgent(Agent or NPC object) -- Agent is user. NPC is another NPC. Always give user false, and 0 ID
 #Usage- NPC(NPC ID, (firstName string, lastName string), Location ID, (Location vector), Description for LLM, PersonalityModule() )

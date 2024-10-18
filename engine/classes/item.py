@@ -10,7 +10,9 @@ class Item(GameObject):
 
     def getIdentifier(self) -> str:
         return 'Item(name: "{name}", id: {id})'.format(name=self._name, id=self.getID())
+    
 class ShopItem(GameObject):
+    #Super function is gameObject
     def __init__(self, id: int, name: str, price: int,locationID: int, coordinates: tuple[float, float, float]) -> None:
         super().__init__(id, locationID, coordinates)
         self._name = name
@@ -31,5 +33,6 @@ class ShopItem(GameObject):
     def getCoordinates(self):
         return self._position
     
+    #This is what LLM reads
     def getIdentifier(self) -> str:
         return 'Item(name: "{name}", price: "{price}" coins, id: {id})'.format(name=self._name, price = self._price, id=self.getID())

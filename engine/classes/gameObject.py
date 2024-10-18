@@ -1,6 +1,7 @@
 import math
 
 class GameObject:
+    #Initilize game object
     def __init__(self, id: int, locationID: int, coordinates: tuple[float, float, float]) -> None:
         self._id = id
         self._position = coordinates
