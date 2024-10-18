@@ -30,11 +30,14 @@ def parseReactionList(functionReactionStr: str) -> list:
 
     returnCalls = []
 
-    for functionCall in functionCalls:
-        functionCalls = functionCall[3:].split(" then ")
-        returnCalls.append((parseFunctionCall(functionCalls[0]), parseFunctionCall(functionCalls[1])))
+    for reaction in functionCalls:
+        returnCalls.append(parseReaction(reaction))
     
     return returnCalls
+
+def parseReaction(functionCallStr: str) -> list:
+    functionCalls = functionCallStr[3:].split(" then ")
+    return [parseFunctionCall(functionCalls[0]), parseFunctionCall(functionCalls[1])]
 
 # expects a string in the format:
 #   funcA(argA, argB, argC)

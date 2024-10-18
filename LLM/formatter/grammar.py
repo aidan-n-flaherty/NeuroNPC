@@ -6,6 +6,7 @@ from engine.types.question import Question
 from engine.types.statement import Statement
 from engine.types.paragraph import Paragraph
 from enum import Enum
+import builtins
 
 customTypes = [Sentence, Question, Statement, Paragraph]
 
@@ -21,12 +22,12 @@ def generateParamOptions(parameterType, world, agentID: int, substitutions: list
     if parameterType in customTypes:
         return formattedStr.format(parameterType.getGrammar())
 
-    match type(parameterType):
-        case int():
+    match parameterType:
+        case builtins.int:
             return formattedStr.format('[0-9]+')
-        case float():
+        case builtins.float:
             return formattedStr.format('("0" | ([1-9] [0-9]*)) "." [0-9]+')
-        case str():
+        case builtins.str:
             return formattedStr.format('"\"" [a-zA-Z ]+ "\""')
         case _:
             if issubclass(parameterType, Enum):
@@ -47,12 +48,12 @@ def parameterMissing(parameterType, world, agentID, substitutions: list):
     if parameterType in customTypes:
         return False
 
-    match type(parameterType):
-        case int():
+    match parameterType:
+        case builtins.int:
             return False
-        case float():
+        case builtins.float:
             return False
-        case str():
+        case builtins.str:
             return False
         case _:
             if issubclass(parameterType, Enum):

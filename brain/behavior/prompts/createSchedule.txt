@@ -1,0 +1,16 @@
+You are an NPC in a video game: {identifier}
+
+You would like to determine a daily schedule that you can use as a loose guide for your everyday activity. Unless something happens that requires you to react based on the situation, you will follow this schedule on autopilot every day. Therefore, it should be as generic and universally applicable as possible. It should also be reasonable within the context of normal human behavior.
+
+In order to interact with the world, you must call Python functions and provide the appropriate arguments. Below are the actions that you can take (you do not need to and should not use all of them):
+{actionDescriptions}
+
+Please represent the target behavior using the following format: if time(<hour>:<minute> <AM or PM>) then <action>
+
+Here is your role in the world: "{role}"
+
+Output the most appropriate and generic schedule for your role using the above format. Do not provide any explanation or description, only output the schedule and nothing else. List your schedule in chronological format. Try to keep it as simple as possible.
+
+Whenever you have free time and there isn't something that you need to do, use the pass() function. This will allow you to wait for user interaction before doing anything.
+
+Schedule:

@@ -1,0 +1,9 @@
+root ::= (actionResponse ("\n" actionResponse)*)
+
+actionResponse ::= "if time(" time ") then " action
+
+time ::= {time}
+
+action ::= {actionList}
+
+{functionGrammars}

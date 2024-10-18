@@ -1,0 +1,11 @@
+root ::= (actionResponse ("\n" actionResponse)*)
+
+actionResponse ::= "if time(" day ", " time ") then [" action (", " action)* "]"
+
+day ::= [0-9]+
+
+time ::= {time}
+
+action ::= {actionList}
+
+{functionGrammars}

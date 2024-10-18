@@ -41,6 +41,8 @@ class NPC(Agent):
         self._behaviorModule.endConversation(agentID)
 
     def react(self, world: World, agent: Agent, notification: Notification, timestamp: int, description: str, embedding) -> list[Notification]:
+        #self._behaviorModule.createSchedule(self, world)
+
         response = self._behaviorModule.getReaction(self, self._personalityModule, self._perceptionModule, agent, notification)
 
         responseArr = None
@@ -90,6 +92,10 @@ class NPC(Agent):
             self._emotionModule.decreaseEmotion(notification.getParameter(0))
         elif notification.getType() == ActionType("update_perception_of"):
             self._perceptionModule.addNote(time.time(), notification.getParameter(0), notification.getParameter(1))
+        elif notification.getType() == ActionType("update_perception_of"):
+            self._behaviorModule.addPolicy(self, notification.getParameter(0), world)
+        elif notification.getType() == ActionType("schedule_behavior"):
+            self._behaviorModule.createScheduleException(self, notification.getParameter(0), world)
         elif notification.getType() == ActionType("check_claim"):
             response = Notification("NONE", [self._memoryModule.check(world.getKnowledgeBase(), self._perceptionModule, notification.getParameter(0), self._reactionModule.getConversingWith())], "You evaluate the statement as: {0}.", "You evaluate the statement as: {0}.")
             description = response.getDescription(world, self.getID())
@@ -114,7 +120,7 @@ class NPC(Agent):
                 emotions=str(self._emotionModule), \
                 functionList=", ".join(NotificationModule.getActions()), \
                 inventory='[{}]'.format(', '.join([world.getItem(itemID).getIdentifier() for itemID in self.getInventory()])), \
-                agents='[{}]'.format(', '.join([world.getAgent(agentID).getIdentifier() for agentID in world.getInteractableAgents(self.getID())])), \
+                agents='You can see {} in the area with you.'.format(', '.join([world.getAgent(agentID).getIdentifier() for agentID in world.getInteractableAgents(self.getID())]) if world.getInteractableAgents(self.getID()) else "no one"), \
                 objects='[{}]'.format(', '.join([world.getItem(itemID).getIdentifier() for itemID in world.getInteractableItems(self.getID())])), \
                 currentLocation=world.getLocation(self.getLocationID()).getIdentifier(), \
                 adjacentLocations='[{}]'.format(', '.join([world.getLocation(locationID).getIdentifier() for locationID in world.getAccessibleLocations(self.getID())])), \

@@ -32,4 +32,4 @@ class ShopItem(GameObject):
         return self._position
     
     def getIdentifier(self) -> str:
-        return 'Item(name: "{name}", price: "{price}" coins, id: {id})'.format(name=self._name, price = self._price, id=self.getID())
+        return 'Item(name: "{name}", price: {price} coins, id: {id})'.format(name=self._name, price = self._price, id=self.getID())

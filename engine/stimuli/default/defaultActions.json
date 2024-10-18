@@ -11,6 +11,30 @@
         "documentation": "Say a single sentence or paragraph out loud, then wait for the other person to respond. Do not cut your dialogue short unless you want the other person to respond to something you said. Once you call this function, you will pass control of the conversation to the other person. You can call this function multiple times per turn.",
         "tags": ["EXTERNAL", "CORE", "EMITTED"]
     },
+    "sleep": {
+        "parameters": { "duration": "int" },
+        "description": "{agent} went to sleep.",
+        "documentation": "Sleep, and then wake up after a certain number of hours.",
+        "tags": ["EXTERNAL", "CORE", "EMITTED"]
+    },
+    "add_policy": {
+        "parameters": { "policy": "Sentence" },
+        "description": "{agent} added \"{0}\" to their default behavior.",
+        "documentation": "Adds a policy to your default behavior tree. It should be an if-then conditional statement, and should only be used to refer to taking physical actions, not conversations.",
+        "tags": ["EXTERNAL", "MENTAL"]
+    },
+    "schedule_behavior": {
+        "parameters": { "behavior": "Sentence" },
+        "description": "{agent} added \"{0}\" to their scheduled behavior.",
+        "documentation": "Take an action or series of actions at a specific time in the future. Use when you want to schedule a one-time event. Remember to answer: who, what, when, and where. Avoid using this for behaviors you want to take every single day.",
+        "tags": ["EXTERNAL", "MENTAL"]
+    },
+    "awake": {
+        "parameters": { },
+        "description": "{agent} woke up.",
+        "documentation": "Forcibly wake up when asleep.",
+        "tags": ["EXTERNAL", "CORE", "EMITTED"]
+    },
     "attack": {
         "parameters": { "user_id": "AgentID" },
         "description": "{agent} attacked {0}.",
@@ -70,6 +94,12 @@
         "parameters": { "user_id": "AgentID", "note": "Sentence" },
         "description": "{agent} added \"{1}\" to their notes about {0}.",
         "documentation": "Whenever you change your opinion about someone else, make sure to call this function.",
+        "tags": ["EXTERNAL", "MENTAL"]
+    },
+    "update_policy": {
+        "parameters": { "policy": "Sentence" },
+        "description": "{agent} created a policy to do \"{0}\".",
+        "documentation": "Whenever you want to modify your default NPC behavior, you should call this function with a brief description of what you want to do by default.",
         "tags": ["EXTERNAL", "MENTAL"]
     },
     "give_item": {
