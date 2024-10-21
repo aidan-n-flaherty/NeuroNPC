@@ -49,9 +49,9 @@ def echo_socket(ws):
     #print([elem.getName() + ", " + str(elem.getParameters()) for elem in parser.parseFunctionList('attack(123)')])
     #print([elem.getName() + ", " + str(elem.getParameters()) for elem in parser.parseFunctionList('say(\"hello there!\")')])
     print(world.getInteractableAgents(0))
-        while not ws.closed:
-            message = ws.receive()
-            ws.send(message)
+    while not ws.closed:
+        message = ws.receive()
+        ws.send(message)
 
 if __name__ == '__main__':
     from gevent import pywsgi
