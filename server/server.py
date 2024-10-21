@@ -47,17 +47,16 @@ print(world.getInteractableAgents(0))
 app = Flask(__name__)
 
 @app.route("/")
-def test():
-    def stream():
-        while True:
-            # Simulate a server event
-            time.sleep(1)
-            yield 'data: The server time is: %s\n\n' % time.ctime()
-    
-    return Response(stream(), mimetype="text/event-stream")
+def echo_socket(ws):
+    while not ws.closed:
+        message = ws.receive()
+        ws.send(message)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    from gevent import pywsgi
+    from geventwebsocket.handler import WebSocketHandler
+    server = pywsgi.WSGIServer(('', 5000), app, handler_class=WebSocketHandler)
+    server.serve_forever()
 
 # while True:
 #     user = input('>>> ')
