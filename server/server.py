@@ -15,7 +15,17 @@ from flask_sockets import Sockets
 import time
 from flask import jsonify
 
-#Create world object
+
+
+#world.emitAction(2, Action("SAY", ["Hello."], "", ActionManager.getDescription("SAY")))
+
+# Eventually need to add function for exporting and importing world data and conversation history 
+
+app = Flask(__name__)
+
+@app.route("/")
+def echo_socket(ws):
+    #Create world object
 world = World()
 
 #registerItem(Item Object) -- Item Object created by: Item(int ID, string name_and_cost, int location_of_item_ID, vector coordinate)
@@ -39,15 +49,6 @@ world.getAgent(1).conversationStart(world.getAgent(0))
 #print([elem.getName() + ", " + str(elem.getParameters()) for elem in parser.parseFunctionList('attack(123)')])
 #print([elem.getName() + ", " + str(elem.getParameters()) for elem in parser.parseFunctionList('say(\"hello there!\")')])
 print(world.getInteractableAgents(0))
-
-#world.emitAction(2, Action("SAY", ["Hello."], "", ActionManager.getDescription("SAY")))
-
-# Eventually need to add function for exporting and importing world data and conversation history 
-
-app = Flask(__name__)
-
-@app.route("/")
-def echo_socket(ws):
     while not ws.closed:
         message = ws.receive()
         ws.send(message)
