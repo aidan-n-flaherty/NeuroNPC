@@ -11,6 +11,7 @@ from brain.state.personality.personalityModule import PersonalityModule
 from engine.enums.degree import Degree
 from engine.actions.actionType import ActionType
 from flask import Flask, Response
+from flask_sockets import Sockets
 import time
 from flask import jsonify
 
