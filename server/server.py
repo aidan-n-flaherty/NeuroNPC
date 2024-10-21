@@ -10,7 +10,8 @@ from engine.classes.location import Location
 from brain.state.personality.personalityModule import PersonalityModule
 from engine.enums.degree import Degree
 from engine.actions.actionType import ActionType
-from flask import Flask
+from flask import Flask, Response
+import time
 from flask import jsonify
 
 #Create world object
@@ -44,9 +45,15 @@ print(world.getInteractableAgents(0))
 
 app = Flask(__name__)
 
-@app.route("/test")
+@app.route("/")
 def test():
-    return jsonify({'test': 'test'})
+    def stream():
+        while True:
+            # Simulate a server event
+            time.sleep(1)
+            yield 'data: The server time is: %s\n\n' % time.ctime()
+    
+    return Response(stream(), mimetype="text/event-stream")
 
 # while True:
 #     user = input('>>> ')
