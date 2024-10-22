@@ -12,15 +12,15 @@
         "tags": ["EXTERNAL", "CORE", "EMITTED"]
     },
     "sleep": {
-        "parameters": { "duration": "int" },
+        "parameters": { "n": "int" },
         "description": "{agent} went to sleep.",
-        "documentation": "Sleep, and then wake up after a certain number of hours.",
+        "documentation": "Sleep for n hours, and then wake up.",
         "tags": ["EXTERNAL", "CORE", "EMITTED"]
     },
     "add_policy": {
         "parameters": { "policy": "Sentence" },
         "description": "{agent} added \"{0}\" to their default behavior.",
-        "documentation": "Adds a policy to your default behavior tree. It should be an if-then conditional statement, and should only be used to refer to taking physical actions, not conversations.",
+        "documentation": "Adds a policy to your default behavior tree. Only use this for behaviors that you can take with the provided actions, and avoid vague, subjective, or personality behaviors (e.g. be nice).",
         "tags": ["EXTERNAL", "MENTAL"]
     },
     "schedule_behavior": {
@@ -90,16 +90,16 @@
         "documentation": "Use this function only when you feel that you need to remember something about your (the NPC's) past actions or encounters, or something that specifically requires knowledge about the game world. Since it is passed to a search engine as a standalone search query, use tags and IDs when referring to people or things.",
         "tags": ["EXTERNAL", "MENTAL"]
     },
-    "update_perception_of": {
+    "report": {
         "parameters": { "user_id": "AgentID", "note": "Sentence" },
         "description": "{agent} added \"{1}\" to their notes about {0}.",
-        "documentation": "Whenever you change your opinion about someone else, make sure to call this function.",
+        "documentation": "Report another user's behavior, whether good or bad, so that the system may reward or punish them accordingly. Keep the report as brief as possible, and make sure to tag any users or items with their IDs.",
         "tags": ["EXTERNAL", "MENTAL"]
     },
-    "update_policy": {
-        "parameters": { "policy": "Sentence" },
-        "description": "{agent} created a policy to do \"{0}\".",
-        "documentation": "Whenever you want to modify your default NPC behavior, you should call this function with a brief description of what you want to do by default.",
+    "set_relation": {
+        "parameters": { "user_id": "AgentID", "relationship": "Relation" },
+        "description": "{agent} set {0}'s relationship with them to {1}.",
+        "documentation": "Change the status of your relationship with another user. Call this immediately whenever the relationship changes to something different from what you already have classified your relation as.",
         "tags": ["EXTERNAL", "MENTAL"]
     },
     "give_item": {

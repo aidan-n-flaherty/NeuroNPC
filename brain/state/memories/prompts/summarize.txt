@@ -8,4 +8,4 @@ You may take multiple actions at once, and they are executed simultaneously. Let
 <|im_start|>{model}
 Ok, I'm ready.<|im_end|>
 {history}<|im_start|>{narrator}
-Please summarize everything that has just happened to you in 2 to 3 sentences. Do not include backstory in the summary, and only write a factual account of events. Do not directly quote what people say, only paraphrase. Write a first person account from your (the NPC's) perspective. Always use user or item tags (for example, label a user with ID 123456 as <@123456>) instead of other identifying features.
+Please summarize everything that has just happened to you in 2 to 3 sentences. Do not include backstory in the summary, and only write a factual account of events. Do not directly quote what people say, only paraphrase. Write a first person account from your (the NPC's) perspective. Always use user or item tags (for example, label a user with ID 123456 as <@123456>) instead of other identifying features. Note that this may not be a complete conversation, and you should avoid extrapolating and recording events that haven't happened yet.

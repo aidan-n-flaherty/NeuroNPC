@@ -6,18 +6,26 @@ from engine.enums.degree import Degree
 from engine.enums.relation import Relation
 
 class Perception:
-    def __init__(self, timestamp: int, agentID: int, note: str) -> None:
+    def __init__(self, timestamp: int, agentID: int, note="", trustworthiness=Degree.NEUTRAL, relation=Relation.STRANGER) -> None:
         self._timestamp = timestamp
         self._agentID = agentID
         self._privateNotes = [note]
         self._externalNotes = []
-        self._trustworthiness = Degree.NEUTRAL
-        self._relation = Relation.STRANGER
+        self._trustworthiness = trustworthiness
+        self._relation = relation
 
     def getTrustworthiness(self) -> Degree:
         return self._trustworthiness
+    
+    def updateTrustworthiness(self, timestamp: int, trustworthiness: Degree):
+        self._timestamp = timestamp
+        self._trustworthiness = trustworthiness
+    
+    def updateRelation(self, timestamp: int, relation: Relation):
+        self._timestamp = timestamp
+        self._relation = relation
 
-    def update(self, timestamp: int, note: str) -> None:
+    def updateNotes(self, timestamp: int, note: str) -> None:
         self._timestamp = timestamp
 
         if note:
@@ -38,4 +46,4 @@ class Perception:
         return self._agentID
     
     def getIdentifier(self) -> str:
-        return "Perception of person (id: {agentID}) from {time}: internal [{internal}], external [{external}].".format(agentID=self._agentID, time=Formatter.timeToString(self._timestamp), internal=", ".join(['"{}"'.format(note) for note in self._privateNotes]), external=", ".join(['"{}"'.format(note) for note in self._externalNotes]))
+        return "Perception of person (id: {agentID}) from {time}: relationship: {relation}, trustworthiness: {trust}, personal notes [{internal}], external notes [{external}].".format(agentID=self._agentID, time=Formatter.timeToString(self._timestamp), relation=self._relation, trust=self._trustworthiness, internal=", ".join(['"{}"'.format(note) for note in self._privateNotes]), external=", ".join(['"{}"'.format(note) for note in self._externalNotes]))

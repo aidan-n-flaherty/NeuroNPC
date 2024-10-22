@@ -28,7 +28,7 @@ def generateParamOptions(parameterType, world, agentID: int, substitutions: list
         case builtins.float:
             return formattedStr.format('("0" | ([1-9] [0-9]*)) "." [0-9]+')
         case builtins.str:
-            return formattedStr.format('"\"" [a-zA-Z ]+ "\""')
+            return formattedStr.format('"\\"" [.]+ "\\""')
         case _:
             if issubclass(parameterType, Enum):
                 return formattedStr.format("({})".format(" | ".join(['"{}"'.format(elem.name.lower()) for elem in parameterType])))

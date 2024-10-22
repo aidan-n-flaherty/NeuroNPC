@@ -101,6 +101,9 @@ def getMainActions() -> list[ActionType]:
 def getSingleActions() -> list[ActionType]:
     return [action for action, details in supportedActions.items() if details.hasTag("SINGLE") and details.hasTag("EXTERNAL")]
 
+def getNonMentalActions() -> list[ActionType]:
+    return [action for action, details in supportedActions.items() if not details.hasTag("MENTAL") and details.hasTag("EXTERNAL")]
+
 def getMentalActions() -> list[ActionType]:
     return [action for action, details in supportedActions.items() if details.hasTag("MENTAL") and details.hasTag("EXTERNAL")]
 

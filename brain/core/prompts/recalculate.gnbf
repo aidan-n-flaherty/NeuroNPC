@@ -1,4 +1,4 @@
-root ::= (mainAction ("\n" action)*) | (action "\n" mainAction ("\n" action)*) | singleAction
+root ::= ((mainAction ("\n" action)*) | (action "\n" mainAction ("\n" action)*) | singleAction)
 
 singleAction ::= {singleActionList}
 

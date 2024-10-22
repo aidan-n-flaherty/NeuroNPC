@@ -88,18 +88,19 @@ class BehaviorModule:
                 policy=policy,
                 identifier=agent.getIdentifier() + " (name: " + agent.getName() + ")",
                 narrator=LLMConstants.NARRATOR_NAME, \
-                actionDescriptions="\n".join(["{}: {}".format(NotificationModule.getFunctionStr(action), NotificationModule.getDocumentation(action)) for action in NotificationModule.getActions()]), \
+                actionDescriptions="\n".join(["{}: {}".format(NotificationModule.getFunctionStr(action), NotificationModule.getDocumentation(action)) for action in NotificationModule.getMainActions()]), \
                 eventDescriptions="\n".join(["{}: {}".format(NotificationModule.getFunctionStr(event), NotificationModule.getDocumentation(event)) for event in NotificationModule.getEvents()]))
             
             grammar = grammar.read().format(\
                 eventList=" | ".join([event.replace("_", "") for event in NotificationModule.getEvents() if not Grammar.grammarMissing(event, world, agent.getID(), self.getReplacements())]), \
-                actionList=" | ".join([action.replace("_", "") for action in NotificationModule.getActions() if not Grammar.grammarMissing(action, world, agent.getID(), self.getReplacements())]), \
-                actionEventList=" | ".join([action.replace("_", "") + "Event" for action in NotificationModule.getActions() if not Grammar.grammarMissing(action, world, agent.getID(), self.getReplacements())]), \
+                actionList=" | ".join([action.replace("_", "") for action in NotificationModule.getMainActions() if not Grammar.grammarMissing(action, world, agent.getID(), self.getReplacements())]), \
+                actionEventList=" | ".join([action.replace("_", "") + "Event" for action in NotificationModule.getMainActions() if not Grammar.grammarMissing(action, world, agent.getID(), self.getReplacements())]), \
                 functionGrammars="\n\n".join(['{} ::= {}'.format(func.replace("_", ""), Grammar.generateGrammar(func, world, agent.getID(), [pair for pair in self.getReplacements() if pair[1] != '_'])) for func in NotificationModule.getNotifications()]), \
                 functionEventGrammars="\n\n".join(['{} ::= {}'.format(func.replace("_", "") + "Event", Grammar.generateGrammar(func, world, agent.getID(), self.getReplacements())) for func in NotificationModule.getNotifications()]))
             
             result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt), grammar=grammar)
 
+            print(policy)
             for policyStr in result["choices"][0]["text"].split("\n"):
                 print(policyStr)
                 self._policies.add(policyStr)

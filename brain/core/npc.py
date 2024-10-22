@@ -41,8 +41,6 @@ class NPC(Agent):
         self._behaviorModule.endConversation(agentID)
 
     def react(self, world: World, agent: Agent, notification: Notification, timestamp: int, description: str, embedding) -> list[Notification]:
-        #self._behaviorModule.createSchedule(self, world)
-
         response = self._behaviorModule.getReaction(self, self._personalityModule, self._perceptionModule, agent, notification)
 
         responseArr = None
@@ -90,9 +88,11 @@ class NPC(Agent):
             self._emotionModule.increaseEmotion(notification.getParameter(0))
         elif notification.getType() == ActionType("lower_emotion"):
             self._emotionModule.decreaseEmotion(notification.getParameter(0))
-        elif notification.getType() == ActionType("update_perception_of"):
+        elif notification.getType() == ActionType("report"):
             self._perceptionModule.addNote(time.time(), notification.getParameter(0), notification.getParameter(1))
-        elif notification.getType() == ActionType("update_perception_of"):
+        elif notification.getType() == ActionType("set_relation"):
+            self._perceptionModule.updateRelation(time.time(), notification.getParameter(0))
+        elif notification.getType() == ActionType("add_policy"):
             self._behaviorModule.addPolicy(self, notification.getParameter(0), world)
         elif notification.getType() == ActionType("schedule_behavior"):
             self._behaviorModule.createScheduleException(self, notification.getParameter(0), world)
@@ -115,7 +115,8 @@ class NPC(Agent):
                 identifier=self.getIdentifier() + " (name: " + self.getName() + ")",
                 backstory=self._backstory, \
                 narrator=LLMConstants.NARRATOR_NAME, \
-                functionDescriptions="\n".join(["{}: {}".format(NotificationModule.getFunctionStr(action), NotificationModule.getDocumentation(action)) for action in NotificationModule.getActions()]), \
+                physicalFunctionDescriptions="\n".join(["{}: {}".format(NotificationModule.getFunctionStr(action), NotificationModule.getDocumentation(action)) for action in NotificationModule.getNonMentalActions()]), \
+                mentalFunctionDescriptions="\n".join(["{}: {}".format(NotificationModule.getFunctionStr(action), NotificationModule.getDocumentation(action)) for action in NotificationModule.getMentalActions()]), \
                 history=Formatter.formatHistory(self.getID(), self._memoryModule.getSummary(), self._memoryModule.getObserved()), \
                 emotions=str(self._emotionModule), \
                 functionList=", ".join(NotificationModule.getActions()), \
