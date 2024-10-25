@@ -52,8 +52,6 @@ def parseFunctionCall(functionCallStr: str) -> Notification:
     if not NotificationModule.validAction(ActionType(functionName)):
         return None
 
-    print(functionCallStr)
-    print(functionCallStr[splitIndex:])
     functionArgs = parse_array(functionCallStr[splitIndex:], NotificationModule.getParameterTypes(ActionType(functionName)))
 
     return Notification(functionName, functionArgs, functionCallStr, NotificationModule.getDescription(ActionType(functionName)))

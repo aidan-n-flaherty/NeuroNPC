@@ -70,7 +70,9 @@ class NPC(Agent):
                 responseDescription = response.getDescription(world, self.getID())
                 selfDescription = response.getSelfDescription(world, self.getID())
                 observedDescription = response.getObservedDescription(world, self.getID(), self.getID())
-                self._memoryModule.addMemory(self, world.getKnowledgeBase(), ObservedMemory(timestamp, self.getID(), response, selfDescription, responseDescription, observedDescription, Generator.encode(Formatter.removeStopWords(responseDescription))), self._perceptionModule)
+                
+                if not NotificationModule.isEphemeral(response.getType()):
+                    self._memoryModule.addMemory(self, world.getKnowledgeBase(), ObservedMemory(timestamp, self.getID(), response, selfDescription, responseDescription, observedDescription, Generator.encode(Formatter.removeStopWords(responseDescription))), self._perceptionModule)
 
                 if response.getType() in NotificationModule.getMentalActions():
                     returnArr += self.processSelf(world, agent, response, timestamp, description, embedding)
@@ -90,8 +92,8 @@ class NPC(Agent):
             self._emotionModule.decreaseEmotion(notification.getParameter(0))
         elif notification.getType() == ActionType("report"):
             self._perceptionModule.addNote(time.time(), notification.getParameter(0), notification.getParameter(1))
-        elif notification.getType() == ActionType("set_relation"):
-            self._perceptionModule.updateRelation(time.time(), notification.getParameter(0))
+        elif notification.getType() == ActionType("update_relationship"):
+            self._perceptionModule.updateRelation(time.time(), notification.getParameter(0), notification.getParameter(1))
         elif notification.getType() == ActionType("add_policy"):
             self._behaviorModule.addPolicy(self, notification.getParameter(0), world)
         elif notification.getType() == ActionType("schedule_behavior"):

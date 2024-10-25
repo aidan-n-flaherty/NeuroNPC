@@ -100,10 +100,9 @@ class BehaviorModule:
             
             result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt), grammar=grammar)
 
-            print(policy)
             for policyStr in result["choices"][0]["text"].split("\n"):
-                print(policyStr)
                 self._policies.add(policyStr)
+                print(policyStr)
 
     def getPolicies(self):
         return self._policies

@@ -110,6 +110,9 @@ def getMentalActions() -> list[ActionType]:
 def getActionDescriptions() -> list[str]:
     return [getFunctionStr(action) for action, details in supportedActions.items() if details.hasTag("EXTERNAL")]
 
+def isEphemeral(notificationType: ActionType | EventType):
+    return supportedNotifications[notificationType].hasTag("EPHEMERAL")
+
 def shouldEmit(notificationType: ActionType | EventType):
     return supportedNotifications[notificationType].hasTag("EMIT")
 

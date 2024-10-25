@@ -9,7 +9,7 @@ class Perception:
     def __init__(self, timestamp: int, agentID: int, note="", trustworthiness=Degree.NEUTRAL, relation=Relation.STRANGER) -> None:
         self._timestamp = timestamp
         self._agentID = agentID
-        self._privateNotes = [note]
+        self._privateNotes = [note] if note else []
         self._externalNotes = []
         self._trustworthiness = trustworthiness
         self._relation = relation
@@ -46,4 +46,4 @@ class Perception:
         return self._agentID
     
     def getIdentifier(self) -> str:
-        return "Perception of person (id: {agentID}) from {time}: relationship: {relation}, trustworthiness: {trust}, personal notes [{internal}], external notes [{external}].".format(agentID=self._agentID, time=Formatter.timeToString(self._timestamp), relation=self._relation, trust=self._trustworthiness, internal=", ".join(['"{}"'.format(note) for note in self._privateNotes]), external=", ".join(['"{}"'.format(note) for note in self._externalNotes]))
+        return "Perception of person (id: {agentID}) from {time}: relationship: {relation}, trustworthiness: {trust}, personal notes [{internal}], external notes [{external}].".format(agentID=self._agentID, time=Formatter.timeToString(self._timestamp), relation=self._relation.name.lower().replace("_", ""), trust=self._trustworthiness.name.lower().replace("_", ""), internal=", ".join(['"{}"'.format(note) for note in self._privateNotes]), external=", ".join(['"{}"'.format(note) for note in self._externalNotes]))

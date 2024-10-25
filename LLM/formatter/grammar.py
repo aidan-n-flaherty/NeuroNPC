@@ -5,10 +5,11 @@ from engine.types.sentence import Sentence
 from engine.types.question import Question
 from engine.types.statement import Statement
 from engine.types.paragraph import Paragraph
+from engine.types.plan import Plan
 from enum import Enum
 import builtins
 
-customTypes = [Sentence, Question, Statement, Paragraph]
+customTypes = [Sentence, Question, Statement, Paragraph, Plan]
 
 def generateGrammar(notification: ActionType | EventType, world, agentID: int, substitutions=[]) -> str:
     return '"' + notification + '(\" {} \")"'.format(generateParameterGrammar(NotificationModule.getParameterTypes(notification), world, agentID, substitutions))
@@ -28,7 +29,7 @@ def generateParamOptions(parameterType, world, agentID: int, substitutions: list
         case builtins.float:
             return formattedStr.format('("0" | ([1-9] [0-9]*)) "." [0-9]+')
         case builtins.str:
-            return formattedStr.format('"\\"" [.]+ "\\""')
+            return formattedStr.format('"\\"" [^\\\\"]+ "\\""')
         case _:
             if issubclass(parameterType, Enum):
                 return formattedStr.format("({})".format(" | ".join(['"{}"'.format(elem.name.lower()) for elem in parameterType])))

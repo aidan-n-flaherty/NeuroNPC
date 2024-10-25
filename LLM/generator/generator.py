@@ -72,7 +72,7 @@ def create_deterministic_completion(prompt: str, grammar=None):
             }]
         }
     else:
-        return llm.create_completion(prompt, model=constants.MODEL_NAME, max_tokens=512*8, stop=["<|im_start|>", "<|im_end|>"], echo=False, stream=False, mirostat_mode=0, mirostat_tau=5, top_p=1.0, repeat_penalty=1.25, temperature=0.0, grammar=LlamaGrammar.from_string(grammar, verbose=False) if grammar else None)
+        return llm.create_completion(prompt, model=constants.MODEL_NAME, max_tokens=512, stop=["<|im_start|>", "<|im_end|>"], echo=False, stream=False, mirostat_mode=0, mirostat_tau=5, top_p=1.0, repeat_penalty=1.25, temperature=0.0, grammar=LlamaGrammar.from_string(grammar, verbose=False) if grammar else None)
 
 def create_completion(prompt: str, grammar=None):
     if args.server:
@@ -97,7 +97,7 @@ def create_completion(prompt: str, grammar=None):
             }]
         }
     else:
-        return llm.create_completion(prompt, model=constants.MODEL_NAME, max_tokens=512*8, stop=["<|im_start|>", "<|im_end|>"], echo=False, stream=False, mirostat_mode=0, mirostat_tau=5, top_p=0.95, repeat_penalty=1.25, grammar=LlamaGrammar.from_string(grammar, verbose=False) if grammar else None)
+        return llm.create_completion(prompt, model=constants.MODEL_NAME, max_tokens=512, stop=["<|im_start|>", "<|im_end|>"], echo=False, stream=False, mirostat_mode=0, mirostat_tau=5, top_p=0.95, repeat_penalty=1.25, grammar=LlamaGrammar.from_string(grammar, verbose=False) if grammar else None)
 
 def classify(sentence: str, labels: list[str]) -> str:
     return classifier(sentence, labels)["labels"][0]

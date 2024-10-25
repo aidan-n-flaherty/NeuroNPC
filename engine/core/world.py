@@ -103,4 +103,4 @@ class World:
 
         for (aID, agent) in self._agents.items():
             if aID != agentID and agent.isArtificial():
-                print([str(a) for a in agent.react(self, actionAgent, notification, time.time(), description, encoding)])
+                print('\n'.join([str(a.getFunctionCall()) for a in agent.react(self, actionAgent, notification, time.time(), description, encoding)]))

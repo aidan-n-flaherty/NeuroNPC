@@ -24,7 +24,7 @@ world.registerItem(Item(8, 'a pouch of gold coins', 6, (0, 0, 0)))
 #registerAgent(Agent or NPC object) -- Agent is user. NPC is another NPC. Always give user false, and 0 ID
 #Usage- NPC(NPC ID, (firstName string, lastName string), Location ID, (Location vector), Description for LLM, PersonalityModule() )
 world.registerAgent(Agent(False, 0, ("John", "Doe"), 5, (0, 0, 0), []))
-world.registerAgent(NPC(1, ("Jane", "Doe"), 5, (0, 0, 0), [2, 3, 4, 9], "You are a tavern owner. You have 1 son named <@145>, 1 daughter named <@325>, and 1 husband named <@874>.", "You would like to make as much money as possible to support your family.", PersonalityModule(Degree.VERY_HIGH, Degree.VERY_HIGH, Degree.VERY_HIGH, Degree.VERY_HIGH, Degree.NEUTRAL)))
+world.registerAgent(NPC(1, ("Jane", "Doe"), 5, (0, 0, 0), [2, 3, 4, 9], "You are a tavern owner. You have 1 son named <@145>, 1 daughter named <@325>, and 1 husband named <@874>.", "You would like to make as much money as possible to support your family.", PersonalityModule({ "kind": Degree.HIGH, "pacifist": Degree.VERY_HIGH, "funny": Degree.HIGH, "weird": Degree.ABOVE_AVERAGE }, [ "That's what my grandma always says!", "Exterminate the heathens!", "Cool beans!" ], [ "oops", "hehe", "howdy", "cool" ])))
 
 #registerLocation(Location object)
 #Usage- Location(locationID int, Description string, vector location, array of connected locations)

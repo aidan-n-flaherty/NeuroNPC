@@ -1,4 +1,10 @@
 [{
+    "plan": {
+        "parameters": { "sentence": "Plan" },
+        "description": "{agent} said \"{0}\"",
+        "documentation": "Briefly reflect on what you plan to do this turn. You must list the names of the specific function calls you plan to take, and take an opportunity to reflect on whether they make sense to execute. The user will not see what you write here.",
+        "tags": ["EPHEMERAL"]
+    },
     "pass": {
         "parameters": {},
         "description": "",
@@ -11,10 +17,16 @@
         "documentation": "Say a single sentence or paragraph out loud, then wait for the other person to respond. Do not cut your dialogue short unless you want the other person to respond to something you said. Once you call this function, you will pass control of the conversation to the other person. You can call this function multiple times per turn.",
         "tags": ["EXTERNAL", "CORE", "EMITTED"]
     },
-    "sleep": {
+    "fall_asleep": {
         "parameters": { "n": "int" },
         "description": "{agent} went to sleep.",
         "documentation": "Sleep for n hours, and then wake up.",
+        "tags": ["EXTERNAL", "CORE", "EMITTED"]
+    },
+    "awake": {
+        "parameters": { },
+        "description": "{agent} woke up.",
+        "documentation": "Forcibly wake up when asleep.",
         "tags": ["EXTERNAL", "CORE", "EMITTED"]
     },
     "add_policy": {
@@ -29,12 +41,6 @@
         "documentation": "Take an action or series of actions at a specific time in the future. Use when you want to schedule a one-time event. Remember to answer: who, what, when, and where. Avoid using this for behaviors you want to take every single day.",
         "tags": ["EXTERNAL", "MENTAL"]
     },
-    "awake": {
-        "parameters": { },
-        "description": "{agent} woke up.",
-        "documentation": "Forcibly wake up when asleep.",
-        "tags": ["EXTERNAL", "CORE", "EMITTED"]
-    },
     "attack": {
         "parameters": { "user_id": "AgentID" },
         "description": "{agent} attacked {0}.",
@@ -46,12 +52,6 @@
         "parameters": { "location": "LocationID" },
         "description": "{agent} left the area.",
         "documentation": "Exit the current room or area and move to another one. Only use this when there is an appropriate reason to leave the room, and avoid calling this frequently or consecutively.",
-        "tags": ["EXTERNAL", "CORE", "EMITTED"]
-    },
-    "accompany_user": {
-        "parameters": { "user_id": "AgentID" },
-        "description": "{agent} is now following {0}.",
-        "documentation": "Use this to follow a user. Avoid using this if they do not ask you to follow them.",
         "tags": ["EXTERNAL", "CORE", "EMITTED"]
     },
     "raise_emotion": {
@@ -96,7 +96,7 @@
         "documentation": "Report another user's behavior, whether good or bad, so that the system may reward or punish them accordingly. Keep the report as brief as possible, and make sure to tag any users or items with their IDs.",
         "tags": ["EXTERNAL", "MENTAL"]
     },
-    "set_relation": {
+    "update_relationship": {
         "parameters": { "user_id": "AgentID", "relationship": "Relation" },
         "description": "{agent} set {0}'s relationship with them to {1}.",
         "documentation": "Change the status of your relationship with another user. Call this immediately whenever the relationship changes to something different from what you already have classified your relation as.",
