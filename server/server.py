@@ -64,6 +64,8 @@ def example():
         posted_data = request.get_json()  # Retrieve JSON data from the request
         data = {'message': 'This is a POST request', 'received': posted_data}
         return jsonify(data)
+    elif request.method == 'DELETE':
+        return
     
 @app.route('/agent', methods=['GET', 'POST', 'DELETE'])
 def example():
@@ -77,6 +79,8 @@ def example():
         posted_data = request.get_json()  # Retrieve JSON data from the request
         data = {'message': 'This is a POST request', 'received': posted_data}
         return jsonify(data)
+    elif request.method == 'DELETE':
+        return
     
 @app.route('/location', methods=['GET', 'POST', 'DELETE'])
 def example():
@@ -90,6 +94,8 @@ def example():
         posted_data = request.get_json()  # Retrieve JSON data from the request
         data = {'message': 'This is a POST request', 'received': posted_data}
         return jsonify(data)
+    elif request.method == 'DELETE':
+        return
 
 @app.route('/startConversation', methods=['POST'])
 def example():
@@ -103,6 +109,8 @@ def example():
         posted_data = request.get_json()  # Retrieve JSON data from the request
         data = {'message': 'This is a POST request', 'received': posted_data}
         return jsonify(data)
+    elif request.method == 'DELETE':
+        return
 
 
 if __name__ == '__main__':
