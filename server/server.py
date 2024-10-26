@@ -10,7 +10,7 @@ from engine.classes.location import Location
 from brain.state.personality.personalityModule import PersonalityModule
 from engine.enums.degree import Degree
 from engine.actions.actionType import ActionType
-from flask import Flask, Response, Request, jsonify
+from flask import Flask, Response, request, jsonify
 from flask_sockets import Sockets
 import time
 
@@ -52,7 +52,46 @@ def echo_socket(ws):
         message = ws.receive()
         ws.send(message)
 
-@app.route('/example', methods=['GET', 'POST'])
+@app.route('/item', methods=['GET', 'POST', 'DELETE'])
+def example():
+    if request.method == 'GET':
+        # Handle GET request
+        data = {'message': 'This is a GET request'}
+        return jsonify(data)
+
+    elif request.method == 'POST':
+        # Handle POST request
+        posted_data = request.get_json()  # Retrieve JSON data from the request
+        data = {'message': 'This is a POST request', 'received': posted_data}
+        return jsonify(data)
+    
+@app.route('/agent', methods=['GET', 'POST', 'DELETE'])
+def example():
+    if request.method == 'GET':
+        # Handle GET request
+        data = {'message': 'This is a GET request'}
+        return jsonify(data)
+
+    elif request.method == 'POST':
+        # Handle POST request
+        posted_data = request.get_json()  # Retrieve JSON data from the request
+        data = {'message': 'This is a POST request', 'received': posted_data}
+        return jsonify(data)
+    
+@app.route('/location', methods=['GET', 'POST', 'DELETE'])
+def example():
+    if request.method == 'GET':
+        # Handle GET request
+        data = {'message': 'This is a GET request'}
+        return jsonify(data)
+
+    elif request.method == 'POST':
+        # Handle POST request
+        posted_data = request.get_json()  # Retrieve JSON data from the request
+        data = {'message': 'This is a POST request', 'received': posted_data}
+        return jsonify(data)
+
+@app.route('/startConversation', methods=['POST'])
 def example():
     if request.method == 'GET':
         # Handle GET request
