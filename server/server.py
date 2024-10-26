@@ -10,10 +10,9 @@ from engine.classes.location import Location
 from brain.state.personality.personalityModule import PersonalityModule
 from engine.enums.degree import Degree
 from engine.actions.actionType import ActionType
-from flask import Flask, Response
+from flask import Flask, Response, Request, jsonify
 from flask_sockets import Sockets
 import time
-from flask import jsonify
 
 
 
@@ -52,6 +51,20 @@ def echo_socket(ws):
     while not ws.closed:
         message = ws.receive()
         ws.send(message)
+
+@app.route('/example', methods=['GET', 'POST'])
+def example():
+    if request.method == 'GET':
+        # Handle GET request
+        data = {'message': 'This is a GET request'}
+        return jsonify(data)
+
+    elif request.method == 'POST':
+        # Handle POST request
+        posted_data = request.get_json()  # Retrieve JSON data from the request
+        data = {'message': 'This is a POST request', 'received': posted_data}
+        return jsonify(data)
+
 
 if __name__ == '__main__':
     from gevent import pywsgi
