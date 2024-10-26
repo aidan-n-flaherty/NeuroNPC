@@ -53,7 +53,7 @@ def echo_socket(ws):
         ws.send(message)
 
 @app.route('/item', methods=['GET', 'POST', 'DELETE'])
-def example():
+def item():
     if request.method == 'GET':
         # Handle GET request
         data = {'message': 'This is a GET request'}
@@ -68,7 +68,7 @@ def example():
         return
     
 @app.route('/agent', methods=['GET', 'POST', 'DELETE'])
-def example():
+def agent():
     if request.method == 'GET':
         # Handle GET request
         data = {'message': 'This is a GET request'}
@@ -83,7 +83,7 @@ def example():
         return
     
 @app.route('/location', methods=['GET', 'POST', 'DELETE'])
-def example():
+def location():
     if request.method == 'GET':
         # Handle GET request
         data = {'message': 'This is a GET request'}
@@ -98,7 +98,7 @@ def example():
         return
 
 @app.route('/startConversation', methods=['POST'])
-def example():
+def startConversation():
     if request.method == 'GET':
         # Handle GET request
         data = {'message': 'This is a GET request'}
