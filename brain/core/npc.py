@@ -37,8 +37,11 @@ class NPC(Agent):
     def conversationStart(self, agentID: int):
         self._behaviorModule.startConversingWith(agentID)
     
-    def conversationEnd(self, agentID: int):
-        self._behaviorModule.endConversation(agentID)
+    def conversationEnd(self):
+        self._behaviorModule.stopConversing()
+
+    def shareInformation(self, npc: 'NPC'):
+        self._perceptionModule.exchange(npc._perceptionModule)
 
     def react(self, world: World, agent: Agent, notification: Notification, timestamp: int, description: str, embedding) -> list[Notification]:
         response = self._behaviorModule.getReaction(self, self._personalityModule, self._perceptionModule, agent, notification)
@@ -56,6 +59,7 @@ class NPC(Agent):
                     if 'claim' == classification:
                         extracted = self._memoryModule.extract(world)
                         id = self._memoryModule.addTestimony(world.getKnowledgeBase(), extracted, agent.getID(), 2)
+                        self._perceptionModule.setTrustworthiness(time.time(), agent.getID(), self._memoryModule.getSelfConsistency(world.getKnowledgeBase(), agent.getID()))
                         memory.setNote(self._memoryModule.check(world.getKnowledgeBase(), self._perceptionModule, world.getKnowledgeBase().getExistingClaim(id).getClaim(), agent.getID()))
 
             if response.getType() == ActionType("recalculate"):
@@ -86,7 +90,9 @@ class NPC(Agent):
         return []
     
     def processSelf(self, world: World, agent: Agent, notification: Notification, timestamp: int, description: str, embedding) -> list[Notification]:
-        if notification.getType() == ActionType("raise_emotion"):
+        if notification.getType() == ActionType("end_conversation"):
+            self._behaviorModule.stopConversing()
+        elif notification.getType() == ActionType("raise_emotion"):
             self._emotionModule.increaseEmotion(notification.getParameter(0))
         elif notification.getType() == ActionType("lower_emotion"):
             self._emotionModule.decreaseEmotion(notification.getParameter(0))
@@ -137,6 +143,7 @@ class NPC(Agent):
             
             print(Formatter.generatePrompt(prompt))
             result = Generator.create_completion(Formatter.generatePrompt(prompt), grammar=grammar)
+            print(result["choices"][0]["text"])
 
             returnVal = Parser.parseFunctionList(result["choices"][0]["text"])
 

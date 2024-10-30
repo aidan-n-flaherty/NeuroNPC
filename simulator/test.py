@@ -10,6 +10,8 @@ from engine.classes.location import Location
 from brain.state.personality.personalityModule import PersonalityModule
 from engine.enums.degree import Degree
 from engine.stimuli.actionType import ActionType
+from threading import Thread
+from time import sleep
 
 #Create world onject
 world = World()
@@ -38,6 +40,14 @@ world.getAgent(1).conversationStart(world.getAgent(0))
 print(world.getInteractableAgents(0))
 
 #world.emitAction(2, Notification("SAY", ["Hello."], "", NotificationModule.getDescription("SAY")))
+
+def tick():
+    while True:
+        world.tick()
+        sleep(0.01)
+
+thread = Thread(target=tick)
+thread.start()
 
 while True:
     user = input('>>> ')

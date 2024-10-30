@@ -12,6 +12,7 @@ import LLM.parser.parser as Parser
 from engine.types.statement import Statement
 from engine.types.paragraph import Paragraph
 from engine.stimuli.actionType import ActionType
+from engine.enums.degree import Degree
 import brain.constants.constants as Constants
 import time
 from llama_cpp import LlamaGrammar
@@ -37,7 +38,10 @@ class MemoryModule:
     
     def addTestimony(self, knowledgeBase, claim: str, sourceID: int, degree: int) -> int:
         return self._testimonyModule.addClaim(knowledgeBase, claim, sourceID, degree)
-
+    
+    def getSelfConsistency(self, knowledgeBase, agentID: int) -> Degree:
+        return self._testimonyModule.selfConsistency(knowledgeBase, agentID)   
+    
     def addMemory(self, agent, knowledgeBase, memory: ObservedMemory, perceptionModule):
         self._observedMemoryModule.addMemory(memory, perceptionModule)
 
@@ -69,6 +73,10 @@ class MemoryModule:
             offloaded = self._observedMemoryModule.offload()
             #statements = list(filter(lambda memory: memory.getAction().getType() == "SAY" and memory.getAgentID() != agent.getID(), offloaded))
     
+    def exchange(self, memoryModule: 'MemoryModule'):
+        self._testimonyModule.exchange(memoryModule._testimonyModule)
+        self._summarizedMemoryModule.exchange(memoryModule._summarizedMemoryModule)
+
     def extract(self, world) -> str:
         observedMemories = [memory for memory in self._observedMemoryModule.getAllMemories() if memory.getAction().getType() == ActionType("say")][-3:]
 

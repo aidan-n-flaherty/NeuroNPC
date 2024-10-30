@@ -68,7 +68,7 @@ def formatHistory(agentID: int, summarizedMemory, observedMemoryModule):
     lastAuthor = None
 
     if summarizedMemory:
-        history += "<|im_start|>{author}\nHere's the last thing you remember: {memory}<|im_end|>\n".format(author=NARRATOR_NAME, memory=summarizedMemory.getDescription())
+        history += "<|im_start|>{author}\nContext: {memory}<|im_end|>\n".format(author=NARRATOR_NAME, memory=summarizedMemory.getDescription())
 
     referencedAgents = set()
 

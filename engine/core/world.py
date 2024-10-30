@@ -9,6 +9,7 @@ from engine.classes.assertion import Assertion
 import LLM.generator.generator as Generator
 import time
 from difflib import SequenceMatcher
+from threading import Lock
 
 class World:
     def __init__(self):
@@ -16,6 +17,8 @@ class World:
         self._agents = {}
         self._items = {}
         self._locations = {}
+        self._reactionQueue = []
+        self._processingLock = Lock()
     
     def getKnowledgeBase(self):
         return self._knowledgeBase
@@ -96,11 +99,24 @@ class World:
         return interactable
     
     def emitAction(self, agentID: int, notification: Notification) -> bool:
-        actionAgent = self._agents[agentID]
-        
         description = notification.getDescription(self, agentID)
         encoding = Generator.encode(description)
 
+        self._processingLock.acquire_lock()
         for (aID, agent) in self._agents.items():
             if aID != agentID and agent.isArtificial():
+                self._reactionQueue.append((aID, agentID, description, encoding, notification))
+        self._processingLock.release_lock()
+    
+    def tick(self):
+        while len(self._reactionQueue) > 0:
+            agentID, sourceID, description, encoding, notification = self._reactionQueue.pop(0)
+            agent = self._agents[agentID]
+            actionAgent = self._agents[sourceID]
+
+            self._processingLock.acquire_lock()
+            try:
                 print('\n'.join([str(a.getFunctionCall()) for a in agent.react(self, actionAgent, notification, time.time(), description, encoding)]))
+            except:
+                print('Error')
+            self._processingLock.release_lock()

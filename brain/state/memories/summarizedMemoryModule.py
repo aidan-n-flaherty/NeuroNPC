@@ -5,8 +5,16 @@ from engine.types.statement import Statement
 from llama_cpp import LlamaGrammar
 
 class SummarizedMemoryModule:
-    def __init__(self) -> None:
+    def __init__(self, agentID: int) -> None:
+        self._agentID = agentID
         self._memories = []
+        self._externalMemories = []
+    
+    def exchange(self, summarizedMemoryModule: 'SummarizedMemoryModule'):
+        self._externalMemories += [memory for memory in summarizedMemoryModule._memories if not any([memory.getDescription() == m.getDescription() for m in self._externalMemories])] + [memory for memory in summarizedMemoryModule._externalMemories if not any([memory.getDescription() == m.getDescription() for m in self._externalMemories])]
+        self._externalMemories = [memory for memory in self._externalMemories if memory.getSourceID() != self._agentID]
+        summarizedMemoryModule._externalMemories += [memory for memory in self._memories if not any([memory.getDescription() == m.getDescription() for m in summarizedMemoryModule._externalMemories])] + [memory for memory in self._externalMemories if not any([memory.getDescription() == m.getDescription() for m in summarizedMemoryModule._externalMemories])]
+        summarizedMemoryModule._externalMemories = [memory for memory in summarizedMemoryModule._externalMemories if memory.getSourceID() != summarizedMemoryModule._agentID]
 
     def getAllMemories(self):
         return self._memories

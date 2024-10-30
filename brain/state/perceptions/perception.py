@@ -33,17 +33,35 @@ class Perception:
 
             if sum([len(n) for n in self._privateNotes]) > Constants.MENTAL_NOTE_LIMIT:
                 with open('brain/state/perceptions/prompts/reevaluate.txt', 'r') as prompt:
-                    prompt = prompt.read().format(internal_notes="\n".join(['"{}"'.format(note) for note in self._privateNotes]), external_notes="\n".join(['"{}"'.format(note) for note in self._externalNotes]))
-                    print(prompt)
+                    prompt = prompt.read().format(notes="\n".join(['"{}"'.format(note) for note in self._privateNotes]))
                     result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt))
-                    print(result)
 
                     self._privateNotes = [result["choices"][0]["text"]]
-                    self._externalNotes = []
+    
+    def updateExternalNotes(self, timestamp: int, notes: list[str]) -> None:
+        self._timestamp = timestamp
 
+        if notes:
+            self._externalNotes += notes
+
+            if sum([len(n) for n in self._externalNotes]) > Constants.MENTAL_NOTE_LIMIT:
+                with open('brain/state/perceptions/prompts/reevaluate.txt', 'r') as prompt:
+                    prompt = prompt.read().format(notes="\n".join(['"{}"'.format(note) for note in self._externalNotes]))
+                    result = Generator.create_deterministic_completion(Formatter.generatePrompt(prompt))
+
+                    self._externalNotes = [result["choices"][0]["text"]]
+
+    def getPrivateNotes(self) -> list:
+        return self._privateNotes
+    
+    def getExternalNotes(self) -> list:
+        return self._externalNotes
+
+    def getTimestamp(self) -> int:
+        return self._timestamp
     
     def getAgentID(self) -> int:
         return self._agentID
     
     def getIdentifier(self) -> str:
-        return "Perception of person (id: {agentID}) from {time}: relationship: {relation}, trustworthiness: {trust}, personal notes [{internal}], external notes [{external}].".format(agentID=self._agentID, time=Formatter.timeToString(self._timestamp), relation=self._relation.name.lower().replace("_", ""), trust=self._trustworthiness.name.lower().replace("_", ""), internal=", ".join(['"{}"'.format(note) for note in self._privateNotes]), external=", ".join(['"{}"'.format(note) for note in self._externalNotes]))
+        return "Perception of <@{agentID}>, last updated {time}: relationship: {relation}, trustworthiness: {trust}, personal notes [{internal}], external notes [{external}].".format(agentID=self._agentID, time=Formatter.timeToString(self._timestamp), relation=self._relation.name.lower().replace("_", ""), trust=self._trustworthiness.name.lower().replace("_", ""), internal=", ".join(['"{}"'.format(note) for note in self._privateNotes]), external=", ".join(['"{}"'.format(note) for note in self._externalNotes]))

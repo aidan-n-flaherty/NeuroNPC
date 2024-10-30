@@ -29,7 +29,7 @@ class ObservedMemoryModule:
         self._longTermMemories.extend(self._shortTermMemories[:-3])
         self._shortTermMemories = self._shortTermMemories[-3:]
 
-        self._perceptions = {k: v for k, v in self._perceptions.items() if k in [memory.getAgentID() for memory in self._shortTermMemories]}
+        self._perceptions = {}
 
         return self.offloaded
 
@@ -45,10 +45,10 @@ class ObservedMemoryModule:
     def remember(self, query: str) -> str:
         queryEmbedding = generator.encode(formatter.removeStopWords(query))
 
-        for elem in self._memories:
+        for elem in self.getAllMemories():
             print(formatter.removeStopWords(elem.getDescription()), generator.encodedSimilarity(elem.getEmbedding(), queryEmbedding))
 
-        topMemories = sorted(self._memories, key=lambda elem: generator.encodedSimilarity(elem.getEmbedding(), queryEmbedding))[-5:]
+        topMemories = sorted(self.getAllMemories(), key=lambda elem: generator.encodedSimilarity(elem.getEmbedding(), queryEmbedding))[-5:]
 
         with open('brain/state/memories/prompts/remember.txt', 'r') as prompt, open('brain/state/memories/prompts/remember.gnbf', 'r') as grammar:
             prompt = prompt.read().format(query=query, memories="\n".join([ "{}".format(elem.getIdentifier()) for elem in topMemories]))

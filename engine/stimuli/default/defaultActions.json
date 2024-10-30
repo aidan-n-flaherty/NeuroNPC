@@ -118,6 +118,6 @@
         "parameters": { },
         "description": "{agent} ended the conversation.",
         "documentation": "Call this function when you've said all you wanted to say and think that the conversation should end.",
-        "tags": ["EXTERNAL", "CORE", "EMITTED"]
+        "tags": ["EXTERNAL", "CORE", "MENTAL", "EMITTED"]
     }
 }]

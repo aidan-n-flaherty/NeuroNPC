@@ -16,6 +16,10 @@ class TestimonyModule:
     def __init__(self):
         self._testimonyArr = set()
     
+    def exchange(self, testimonyModule: 'TestimonyModule'):
+        self._testimonyArr = self._testimonyArr + testimonyModule._testimonyArr
+        testimonyModule = set([item for item in self._testimonyArr])
+
     def addClaim(self, knowledgeBase, claim: str, sourceID=-1, degree=1) -> int:
         id = knowledgeBase.getClaim(claim, sourceID, degree).getID()
         self._testimonyArr.add(id)
@@ -48,7 +52,7 @@ class TestimonyModule:
                         score += strength
                         totalConnections += 1
         
-        return Degree(int((score/2.0/totalConnections + 0.5) * len(Degree)))
+        return Degree(int((score/2.0/totalConnections + 0.5) * len(Degree))) if totalConnections > 0 else Degree.NEUTRAL
 
     def believes(self, claim: str) -> BeliefClassification:
         claimEmbedding = Generator.encode(Formatter.removeStopWords(claim))

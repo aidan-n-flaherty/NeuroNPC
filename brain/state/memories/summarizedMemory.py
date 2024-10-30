@@ -4,6 +4,7 @@ from brain.state.memories.observedMemoryModule import ObservedMemoryModule
 
 class SummarizedMemory:
     def __init__(self, agent, previousMemory, observedMemoryModule: ObservedMemoryModule) -> None:
+        self._sourceID = agent.getID()
         self._timeStart = min([memory.getTimestamp() for memory in observedMemoryModule.getShortTermMemories()])
         self._timeEnd = max([memory.getTimestamp() for memory in observedMemoryModule.getShortTermMemories()])
         self._agentsInvolved = list(set([memory.getAgentID() for memory in observedMemoryModule.getShortTermMemories()]))
@@ -16,6 +17,9 @@ class SummarizedMemory:
 
             self._description = result["choices"][0]["text"]
             self._embedding = Generator.encode(Formatter.removeStopWords(self._description))
+
+    def getSourceID(self) -> int:
+        return self._sourceID
 
     def getDescription(self):
         return self._description

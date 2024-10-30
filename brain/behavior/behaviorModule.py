@@ -25,6 +25,9 @@ class BehaviorModule:
     def startConversingWith(self, agent: Agent):
         self._conversingWith = agent.getID()
 
+    def stopConversing(self):
+        self._conversingWith = None
+
     def isConversing(self):
         return not self._conversingWith is None
     
