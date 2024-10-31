@@ -10,10 +10,9 @@ from engine.classes.location import Location
 from brain.state.personality.personalityModule import PersonalityModule
 from engine.enums.degree import Degree
 from engine.actions.actionType import ActionType
-from flask import Flask, Response
+from flask import Flask, Response, request, jsonify
 from flask_sockets import Sockets
 import time
-from flask import jsonify
 
 
 
@@ -52,6 +51,67 @@ def echo_socket(ws):
     while not ws.closed:
         message = ws.receive()
         ws.send(message)
+
+@app.route('/item', methods=['GET', 'POST', 'DELETE'])
+def item():
+    if request.method == 'GET':
+        # Handle GET request
+        data = {'message': 'This is a GET request'}
+        return jsonify(data)
+
+    elif request.method == 'POST':
+        # Handle POST request
+        posted_data = request.get_json()  # Retrieve JSON data from the request
+        data = {'message': 'This is a POST request', 'received': posted_data}
+        return jsonify(data)
+    elif request.method == 'DELETE':
+        return
+    
+@app.route('/agent', methods=['GET', 'POST', 'DELETE'])
+def agent():
+    if request.method == 'GET':
+        # Handle GET request
+        data = {'message': 'This is a GET request'}
+        return jsonify(data)
+
+    elif request.method == 'POST':
+        # Handle POST request
+        posted_data = request.get_json()  # Retrieve JSON data from the request
+        data = {'message': 'This is a POST request', 'received': posted_data}
+        return jsonify(data)
+    elif request.method == 'DELETE':
+        return
+    
+@app.route('/location', methods=['GET', 'POST', 'DELETE'])
+def location():
+    if request.method == 'GET':
+        # Handle GET request
+        data = {'message': 'This is a GET request'}
+        return jsonify(data)
+
+    elif request.method == 'POST':
+        # Handle POST request
+        posted_data = request.get_json()  # Retrieve JSON data from the request
+        data = {'message': 'This is a POST request', 'received': posted_data}
+        return jsonify(data)
+    elif request.method == 'DELETE':
+        return
+
+@app.route('/startConversation', methods=['POST'])
+def startConversation():
+    if request.method == 'GET':
+        # Handle GET request
+        data = {'message': 'This is a GET request'}
+        return jsonify(data)
+
+    elif request.method == 'POST':
+        # Handle POST request
+        posted_data = request.get_json()  # Retrieve JSON data from the request
+        data = {'message': 'This is a POST request', 'received': posted_data}
+        return jsonify(data)
+    elif request.method == 'DELETE':
+        return
+
 
 if __name__ == '__main__':
     from gevent import pywsgi
