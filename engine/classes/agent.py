@@ -1,5 +1,6 @@
 from engine.classes.gameObject import GameObject
 from engine.classes.item import Item
+from brain.core.npcJob import Jobs
 
 class Agent(GameObject):
     def __init__(self, artificial: bool, id: int, name: tuple[str, str], locationID: int, coordinates: tuple[float, float, float], inventory: list[int]) -> None:
@@ -7,6 +8,13 @@ class Agent(GameObject):
         self._name = name
         self._artificial = artificial
         self._inventory = inventory
+        self._job = Jobs()
+    
+    def getJob(self):
+        return self._job
+    
+    def changeJob(self, newJob: Jobs):
+        self._job = newJob
     
     def update(self, coordinates: tuple[float, float, float], inventory: list[int]):
         self._position = coordinates
