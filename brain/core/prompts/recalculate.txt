@@ -29,6 +29,9 @@ Let's begin.<|im_end|>
 ### INVENTORY
 {inventory}
 
+### JOBS
+{jobs}
+
 ### INTERACTABLE AGENTS
 {agents}
 

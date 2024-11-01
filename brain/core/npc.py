@@ -135,6 +135,7 @@ class NPC(Agent):
                 emotions=str(self._emotionModule), \
                 functionList=", ".join(NotificationModule.getActions()), \
                 inventory='[{}]'.format(', '.join([world.getItem(itemID).getIdentifier() for itemID in self.getInventory()])), \
+                jobs= '{}'.format(self.getJob().getIdentifier()),
                 agents=', '.join([self._perceptionModule.getPerceptionStr(agentID) for agentID in world.getInteractableAgents(self.getID())]) if world.getInteractableAgents(self.getID()) else "There is no one in your current location. If you were interacting with a user previously, you must return to your previous location to interact with them again.", \
                 objects='[{}]'.format(', '.join([world.getItem(itemID).getIdentifier() for itemID in world.getInteractableItems(self.getID())])), \
                 currentLocation=world.getLocation(self.getLocationID()).getIdentifier(), \
