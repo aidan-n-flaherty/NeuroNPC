@@ -10,4 +10,4 @@ Remember that the first argument to time() is the number of days, while the seco
 
 Here is your role in the world: "{role}"
 
-You would like to deviate from your routine to do "{exception}". Please output the target behavior without explaining anything, in the format specified above.
+You would like to deviate from your routine to do "{exception}". Please output the target behavior without explaining anything, in the format specified above. The current time is {time}.

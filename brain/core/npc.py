@@ -26,7 +26,7 @@ class NPC(Agent):
         self._backstory = backstory
         self._emotionModule = EmotionModule()
         self._behaviorModule = BehaviorModule()
-        self._memoryModule = MemoryModule()
+        self._memoryModule = MemoryModule(id)
         self._personalityModule = personalityModule
         self._perceptionModule = PerceptionModule()
         self._motivationModule = MotivationModule(time.time(), None, longTermGoals)
@@ -34,8 +34,11 @@ class NPC(Agent):
     def getBackstory(self):
         return self._backstory
 
-    def conversationStart(self, agentID: int):
-        self._behaviorModule.startConversingWith(agentID)
+    def conversationStart(self, agent: Agent):
+        self._behaviorModule.startConversingWith(agent)
+        
+        if isinstance(agent, NPC):
+            agent._behaviorModule.startConversingWith(self)
     
     def conversationEnd(self):
         self._behaviorModule.stopConversing()
@@ -50,6 +53,9 @@ class NPC(Agent):
 
         if response:
             if notification:
+                if agent:
+                    self.conversationStart(agent)
+                    
                 memory = ObservedMemory(timestamp, agent.getID() if agent is not None else -1, notification, "", description, notification.getObservedDescription(world, agent.getID(), self.getID()) if agent is not None else notification.getObservedDescription(world, -1, self.getID()), embedding)
                 self._memoryModule.addMemory(self, world.getKnowledgeBase(), memory, self._perceptionModule)
 
@@ -129,7 +135,7 @@ class NPC(Agent):
                 emotions=str(self._emotionModule), \
                 functionList=", ".join(NotificationModule.getActions()), \
                 inventory='[{}]'.format(', '.join([world.getItem(itemID).getIdentifier() for itemID in self.getInventory()])), \
-                agents='You can see {} in the area with you.'.format(', '.join([world.getAgent(agentID).getIdentifier() for agentID in world.getInteractableAgents(self.getID())]) if world.getInteractableAgents(self.getID()) else "no one"), \
+                agents=', '.join([self._perceptionModule.getPerceptionStr(agentID) for agentID in world.getInteractableAgents(self.getID())]) if world.getInteractableAgents(self.getID()) else "There is no one in your current location. If you were interacting with a user previously, you must return to your previous location to interact with them again.", \
                 objects='[{}]'.format(', '.join([world.getItem(itemID).getIdentifier() for itemID in world.getInteractableItems(self.getID())])), \
                 currentLocation=world.getLocation(self.getLocationID()).getIdentifier(), \
                 adjacentLocations='[{}]'.format(', '.join([world.getLocation(locationID).getIdentifier() for locationID in world.getAccessibleLocations(self.getID())])), \

@@ -18,8 +18,9 @@ import time
 from llama_cpp import LlamaGrammar
 
 class MemoryModule:
-    def __init__(self) -> None:
-        self._summarizedMemoryModule = SummarizedMemoryModule()
+    def __init__(self, agentID: int) -> None:
+        self._agentID = agentID
+        self._summarizedMemoryModule = SummarizedMemoryModule(agentID)
         self._observedMemoryModule = ObservedMemoryModule()
         self._evidenceModule = EvidenceModule()
         self._testimonyModule = TestimonyModule()

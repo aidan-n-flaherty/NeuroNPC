@@ -64,4 +64,4 @@ class Perception:
         return self._agentID
     
     def getIdentifier(self) -> str:
-        return "Perception of <@{agentID}>, last updated {time}: relationship: {relation}, trustworthiness: {trust}, personal notes [{internal}], external notes [{external}].".format(agentID=self._agentID, time=Formatter.timeToString(self._timestamp), relation=self._relation.name.lower().replace("_", ""), trust=self._trustworthiness.name.lower().replace("_", ""), internal=", ".join(['"{}"'.format(note) for note in self._privateNotes]), external=", ".join(['"{}"'.format(note) for note in self._externalNotes]))
+        return "<@{agentID}> -> last profile update: {time}, relationship: {relation}, trustworthiness: {trust}, personal notes [{internal}], external notes [{external}].".format(agentID=self._agentID, time=Formatter.timeToString(self._timestamp), relation=self._relation.name.lower().replace("_", ""), trust=self._trustworthiness.name.lower().replace("_", ""), internal=", ".join(['"{}"'.format(note) for note in self._privateNotes]), external=", ".join(['"{}"'.format(note) for note in self._externalNotes]))

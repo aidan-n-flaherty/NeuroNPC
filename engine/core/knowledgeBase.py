@@ -6,6 +6,7 @@ from engine.classes.assertion import Assertion
 from llama_cpp import LlamaGrammar
 import numpy as np
 import time
+import re
 
 class KnowledgeBase:
     def __init__(self):
@@ -43,6 +44,9 @@ class KnowledgeBase:
         return self._assertions[claimID]
 
     def getClaim(self, claim: str, sourceID=-1, degree=1):
+        claim = re.sub(r'^"(.*)"$', r'\g<1>', claim)
+        claim = claim.replace('"', "'")
+
         if claim in self._strToAssertion:
             return self._assertions[self._strToAssertion[claim]]
 

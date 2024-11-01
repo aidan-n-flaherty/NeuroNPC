@@ -1,4 +1,4 @@
 class Plan(str):
     @staticmethod
     def getGrammar():
-        return '("\\"Names of functions I\'ll call this turn: " [^\\\\"\\\\)\\n]+ "\\"")'
+        return '("\\"It would make sense to call the following function names: 1. " [^\\\\"\\\\(\\\\)\\n]+ "\\"")'

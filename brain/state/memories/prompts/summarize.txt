@@ -9,3 +9,5 @@ You may take multiple actions at once, and they are executed simultaneously. Let
 Ok, I'm ready.<|im_end|>
 {history}<|im_start|>{narrator}
 Please summarize everything that has just happened to you in 2 to 3 sentences. Do not include backstory in the summary, and only write a factual account of events. Do not directly quote what people say, only paraphrase. Write a third person from an impartial observer's perspective. Always use user or item tags (for example, label a user with ID 123456 as <@123456>) instead of other identifying features. Note that this may not be a complete conversation, and you should avoid extrapolating and recording events that may happen but have not happened within the exchange above. Remember, write in third person - do not use personal pronouns.
+
+Remember, do not refer to agents with ID tags (e.g. <@123>) by other terminology (the man, the person, the stranger). When referring to people, always use their ID tag.

@@ -10,6 +10,7 @@ import LLM.generator.generator as Generator
 import time
 from difflib import SequenceMatcher
 from threading import Lock
+import traceback
 
 class World:
     def __init__(self):
@@ -117,6 +118,6 @@ class World:
             self._processingLock.acquire_lock()
             try:
                 print('\n'.join([str(a.getFunctionCall()) for a in agent.react(self, actionAgent, notification, time.time(), description, encoding)]))
-            except:
-                print('Error')
+            except Exception:
+                print(traceback.format_exc())
             self._processingLock.release_lock()

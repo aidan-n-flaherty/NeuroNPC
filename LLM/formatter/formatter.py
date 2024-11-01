@@ -79,11 +79,6 @@ def formatHistory(agentID: int, summarizedMemory, observedMemoryModule):
             history += "<|im_start|>{}".format(author)
         elif lastAuthor != author:
             history += "<|im_end|>\n<|im_start|>{}".format(author)
-        
-        if memory.getAgentID() >= 0 and memory.getAgentID() != agentID and memory.getAgentID() not in referencedAgents:
-            history += "\n" + observedMemoryModule.getPerceptionStr(memory.getAgentID())
-
-            referencedAgents.add(memory.getAgentID())
 
         #history += "\n{memory}".format(memory=(memory.getFunctionCall() if memory.referencesAgent(agentID) else memory.getObservedDescription()))
         history += "\n{memory}".format(memory=(memory.getFunctionCall() if memory.referencesAgent(agentID) else memory.getObservedDescription()))

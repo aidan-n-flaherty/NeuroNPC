@@ -99,7 +99,7 @@
     "update_relationship": {
         "parameters": { "user_id": "AgentID", "relationship": "Relation" },
         "description": "{agent} set {0}'s relationship with them to {1}.",
-        "documentation": "Change the status of your relationship with another user. Call this immediately whenever the relationship changes to something different from what you already have classified your relation as.",
+        "documentation": "Change the status of your relationship with another user. Call this immediately whenever the relationship changes to something different from what you already have classified your relation as. Feel free to call this often, depending on how you feel about a user.",
         "tags": ["EXTERNAL", "MENTAL"]
     },
     "give_item": {

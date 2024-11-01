@@ -15,6 +15,7 @@ import LLM.parser.parser as Parser
 from brain.behavior.policy import Policy
 from brain.behavior.scheduledBehavior import ScheduledBehavior
 import re
+import time as t
 
 class BehaviorModule:
     def __init__(self):
@@ -60,6 +61,7 @@ class BehaviorModule:
     def createScheduleException(self, agent, exception: str, world):
         with open('brain/behavior/prompts/createScheduleException.txt', 'r') as prompt, open('brain/behavior/prompts/createScheduleException.gnbf', 'r') as grammar:
             prompt = prompt.read().format(
+                time=t.strftime('%l:%M:%S %p'),
                 role=agent.getBackstory(),
                 exception=exception,
                 identifier=agent.getIdentifier() + " (name: " + agent.getName() + ")",
@@ -111,7 +113,7 @@ class BehaviorModule:
         return self._policies
 
     def getReaction(self, selfAgent: Agent, personalityModule: PersonalityModule, perceptionModule: PerceptionModule, agent: Agent, notification: Notification) -> Notification:
-        if agent is None:
+        if agent is None or (NotificationModule.shouldEmit(notification.getType()) and any([issubclass(type(param), AgentID) and param == selfAgent.getID() for param in notification.getParameters()])):
             return Notification(ActionType("recalculate"))
         
         for policyStr in self._policies:
