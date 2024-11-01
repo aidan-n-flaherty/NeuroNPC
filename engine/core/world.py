@@ -33,7 +33,7 @@ class World:
             return options[-1]
         return None
 
-    def getAgent(self, agentID: int):
+    def getAgent(self, agentID: int) -> Agent:
         return self._agents[agentID] if agentID in self._agents else None
     
     def getItem(self, itemID: int):

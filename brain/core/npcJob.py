@@ -1,6 +1,6 @@
 from engine.enums.degree import Degree
 
-class job():
+class Jobs():
     def __init__(self, jobTitle: str, jobDesc: str, jobLocation: list[int], jobSatisfaction: Degree, jobReward: Degree, jobRisk: Degree):
         self._jobTitle = jobTitle               #title of job
         self._jobDesc = jobDesc                 #short description of what the job is
@@ -8,8 +8,13 @@ class job():
         self._jobSatisfaction = jobSatisfaction #rating from 1-7 of how happy the NPC is with the job
         self._jobReward = jobReward             #rating from 1-7 of how much the NPC is rewarded for completing the job
         self._jobRisk = jobRisk                 #rating from 1-7 of how dangerous the job is
+        self._hasJob = True
 
         #use degree enums for rating
+    
+    def __init__(self):
+        self._hasJob = False
+
     
     def getJob(self):
         return self._jobTitle
@@ -53,4 +58,7 @@ class job():
         self.updateJobSatisfaction(newJobsatisfaction)
 
     def getIdentifier(self) -> str:
-        return 'This NPC has a job called: "{jobtitle}", this job does: {jobdesc} at these location IDS {jobloc}. On a scale from VERY_LOW to VERY_HIGH, this job is "{satisfying}" satisfying, "{reward}" rewarding, and "{risk}" dangerous'.format(jobtitle=self._jobTitle, jobdesc=self._jobDesc, jobloc=self._jobLocation, satisfying=self._jobSatisfaction, reward=self._jobReward,risk=self._jobRisk)
+        if self._hasJob:
+            return 'This NPC has a job called: "{jobtitle}", this job does: {jobdesc} at these location IDS {jobloc}. On a scale from VERY_LOW to VERY_HIGH, this job is "{satisfying}" satisfying, "{reward}" rewarding, and "{risk}" dangerous'.format(jobtitle=self._jobTitle, jobdesc=self._jobDesc, jobloc=self._jobLocation, satisfying=self._jobSatisfaction, reward=self._jobReward,risk=self._jobRisk)
+        else:
+            return 'this NPC is unemployed'
