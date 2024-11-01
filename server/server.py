@@ -118,15 +118,3 @@ if __name__ == '__main__':
     from geventwebsocket.handler import WebSocketHandler
     server = pywsgi.WSGIServer(('', 5000), app, handler_class=WebSocketHandler)
     server.serve_forever()
-
-# while True:
-#     user = input('>>> ')
-
-#     action = None
-#     try:
-#         action = Parser.parseFunctionCall(user)
-#     except:
-#         action = Action(ActionType("say"), [Formatter.formatTags(user, world)], "", ActionManager.getDescription(ActionType("say")))
-    
-#     world.emitAction(0, action)
-    
