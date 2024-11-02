@@ -40,6 +40,8 @@ class middleware():
 
 app = Flask(__name__)
 
+app.wsgi_app = middleware(app.wsgi_app)
+
 @app.route("/")
 def echo_socket(ws):
     #Create world object
