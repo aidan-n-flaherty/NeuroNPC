@@ -57,7 +57,6 @@ class World:
     
     def registerContainer(self, item: Container):
         self._items[item.getID()] = item
-
     
     def registerLocation(self, location: Location):
         self._locations[location.getID()] = location

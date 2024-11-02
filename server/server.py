@@ -3,18 +3,19 @@ import LLM.formatter.formatter as Formatter #This is where LLM outpput is format
 from engine.classes.agent import Agent      #This is the User
 from brain.core.npc import NPC              #This is the NPC
 from engine.core.world import World         #This is where KnowledgeBases, NPCS, Items, locations are initiated
-from engine.actions.action import Action
-import engine.actions.actionManager as ActionManager
+from engine.stimuli.notification import Notification
+import engine.stimuli.notificationModule as NotificationModule
 from engine.classes.item import Item
 from engine.classes.location import Location
 from brain.state.personality.personalityModule import PersonalityModule
 from engine.enums.degree import Degree
-from engine.actions.actionType import ActionType
+from engine.stimuli.actionType import ActionType
+from engine.stimuli.eventType import EventType
 from flask import Flask, Response, request, jsonify
 from flask_sockets import Sockets
 import time
 
-
+worlds = {}
 
 #world.emitAction(2, Action("SAY", ["Hello."], "", ActionManager.getDescription("SAY")))
 
@@ -52,6 +53,42 @@ def echo_socket(ws):
         message = ws.receive()
         ws.send(message)
 
+@app.route('/registerAgent', methods=['POST'])
+def registerAgent():
+    if request.method == 'POST':
+        data = request.get_json()  # Retrieve JSON data from the request
+        
+        token = data['token']
+        world = worlds[token]
+
+        world.registerAgent(Agent(data['artificial'], data['id'], data['name'], data['locationID'], data['coordinates'], data['inventory']))
+
+        return jsonify({
+            "status": "success"
+        })
+    else:
+        return jsonify({
+            "status": "method does not exist"
+        })
+
+@app.route('/registerItem', methods=['POST'])
+def registerItem():
+    if request.method != 'POST':
+        data = request.get_json()  # Retrieve JSON data from the request
+        
+        token = data['token']
+        world = worlds[token]
+
+        world.registerItem(Item(data['id'], data['name'], data['locationID'], data['coordinates']))
+
+        return jsonify({
+            "status": "success"
+        })
+    else:
+        return jsonify({
+            "status": "method does not exist"
+        })
+    
 @app.route('/item', methods=['GET', 'POST', 'DELETE'])
 def item():
     if request.method == 'GET':
@@ -116,7 +153,7 @@ def startConversation():
 if __name__ == '__main__':
     from gevent import pywsgi
     from geventwebsocket.handler import WebSocketHandler
-    server = pywsgi.WSGIServer(('', 5000), app, handler_class=WebSocketHandler)
+    server = pywsgi.WSGIServer(('', 8080), app, handler_class=WebSocketHandler)
     server.serve_forever()
 
 # while True:

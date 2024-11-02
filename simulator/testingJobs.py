@@ -13,6 +13,8 @@ from engine.classes.location import Location
 from brain.state.personality.personalityModule import PersonalityModule
 from engine.enums.degree import Degree
 from engine.stimuli.actionType import ActionType
+from threading import Thread
+from time import sleep
 
 #Create world onject
 world = World()
@@ -33,7 +35,7 @@ world.registerItem(Item(8, 'a pouch of gold coins', 11, (0, 0, 0)))
 #registerAgent(Agent or NPC object) -- Agent is user. NPC is another NPC. Always give user false, and 0 ID
 #Usage- NPC(NPC ID, (firstName string, lastName string), Location ID, (Location vector), Description for LLM, PersonalityModule() )
 world.registerAgent(Agent(False, 0, ("John", "Doe"), 5, (0, 0, 0), []))
-world.registerAgent(NPC(1, ("Jane", "Doe"), 5, (0, 0, 0), [2, 3, 4, 9, 10], "You are a tavern owner. You have 1 son named <@145>, 1 daughter named <@325>, and 1 husband named <@874>.", "You would like to make as much money as possible to support your family.", PersonalityModule(Degree.VERY_LOW, Degree.VERY_HIGH, Degree.VERY_LOW, Degree.VERY_HIGH, Degree.NEUTRAL)))
+world.registerAgent(NPC(1, ("Jane", "Doe"), 5, (0, 0, 0), [2, 3, 4, 9, 10], "You are a tavern owner. You have 1 son named <@145>, 1 daughter named <@325>, and 1 husband named <@874>.", "You would like to make as much money as possible to support your family.", PersonalityModule({ "kind": Degree.HIGH, "pacifist": Degree.VERY_HIGH, "funny": Degree.HIGH, "weird": Degree.ABOVE_AVERAGE }, [ ], [ ])))
 
 #registerLocation(Location object)
 #Usage- Location(locationID int, Description string, vector location, array of connected locations)
@@ -49,7 +51,13 @@ world.getAgent(1).conversationStart(world.getAgent(0))
 
 print(world.getInteractableAgents(0))
 
+def tick():
+    while True:
+        world.tick()
+        sleep(0.01)
 
+thread = Thread(target=tick)
+thread.start()
 
 while True:
     user = input('>>> ') #ask user for text input
