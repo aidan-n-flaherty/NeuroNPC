@@ -26,6 +26,8 @@ class middleware():
     Simple WSGI middleware
     '''
 
+
+    #To-do: add export and authentication system
     def __init__(self, app):
         self.app = app
 
@@ -41,6 +43,15 @@ class middleware():
 app = Flask(__name__)
 
 app.wsgi_app = middleware(app.wsgi_app)
+
+#Register world route
+@app.route("/auth", methods=['POST'])
+def item():
+    if request.method == 'POST':
+        # Handle POST request
+        posted_data = request.get_json()  # Retrieve JSON data from the request
+        data = {'message': 'This is a POST request', 'received': posted_data}
+        return jsonify(data)
 
 @app.route("/")
 def echo_socket(ws):
