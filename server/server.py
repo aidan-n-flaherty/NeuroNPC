@@ -12,6 +12,7 @@ from engine.enums.degree import Degree
 from engine.actions.actionType import ActionType
 from flask import Flask, Response, request, jsonify
 from flask_sockets import Sockets
+from werkzeug.wrappers import Request, Response, ResponseStream
 import time
 
 
@@ -19,6 +20,23 @@ import time
 #world.emitAction(2, Action("SAY", ["Hello."], "", ActionManager.getDescription("SAY")))
 
 # Eventually need to add function for exporting and importing world data and conversation history 
+
+class middleware():
+    '''
+    Simple WSGI middleware
+    '''
+
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        request = Request(environ)
+        
+        return self.app(environ, start_response)
+            
+
+        # res = Response(u'Authorization failed', mimetype= 'text/plain', status=401)
+        # return res(environ, start_response)
 
 app = Flask(__name__)
 
