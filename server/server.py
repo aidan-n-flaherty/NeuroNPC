@@ -13,6 +13,7 @@ from engine.stimuli.actionType import ActionType
 from engine.stimuli.eventType import EventType
 from flask import Flask, Response, request, jsonify
 from flask_sockets import Sockets
+from werkzeug.wrappers import Request, Response, ResponseStream
 import time
 
 worlds = {}
@@ -21,7 +22,37 @@ worlds = {}
 
 # Eventually need to add function for exporting and importing world data and conversation history 
 
+class middleware():
+    '''
+    Simple WSGI middleware
+    '''
+
+
+    #To-do: add export and authentication system
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        request = Request(environ)
+        
+        return self.app(environ, start_response)
+            
+
+        # res = Response(u'Authorization failed', mimetype= 'text/plain', status=401)
+        # return res(environ, start_response)
+
 app = Flask(__name__)
+
+app.wsgi_app = middleware(app.wsgi_app)
+
+#Register world route
+@app.route("/auth", methods=['POST'])
+def item():
+    if request.method == 'POST':
+        # Handle POST request
+        posted_data = request.get_json()  # Retrieve JSON data from the request
+        data = {'message': 'This is a POST request', 'received': posted_data}
+        return jsonify(data)
 
 @app.route("/")
 def echo_socket(ws):
@@ -155,15 +186,3 @@ if __name__ == '__main__':
     from geventwebsocket.handler import WebSocketHandler
     server = pywsgi.WSGIServer(('', 8080), app, handler_class=WebSocketHandler)
     server.serve_forever()
-
-# while True:
-#     user = input('>>> ')
-
-#     action = None
-#     try:
-#         action = Parser.parseFunctionCall(user)
-#     except:
-#         action = Action(ActionType("say"), [Formatter.formatTags(user, world)], "", ActionManager.getDescription(ActionType("say")))
-    
-#     world.emitAction(0, action)
-    
