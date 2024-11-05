@@ -53,7 +53,7 @@ def item():
         posted_data = request.get_json()  # Retrieve JSON data from the request
         data = {'message': 'This is a POST request', 'received': posted_data}
         return jsonify(data)
-g
+
 @app.route("/")
 def echo_socket(ws):
     #Create world object
