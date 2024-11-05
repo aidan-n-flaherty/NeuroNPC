@@ -53,7 +53,7 @@ def item():
         posted_data = request.get_json()  # Retrieve JSON data from the request
         data = {'message': 'This is a POST request', 'received': posted_data}
         return jsonify(data)
-
+g
 @app.route("/")
 def echo_socket(ws):
     #Create world object
@@ -87,12 +87,13 @@ def echo_socket(ws):
 @app.route('/registerAgent', methods=['POST'])
 def registerAgent():
     if request.method == 'POST':
-        data = request.get_json()  # Retrieve JSON data from the request
+        data = request.get_json()
         
-        token = data['token']
-        world = worlds[token]
+        worldID = data['worldID']
+        agent = data['agent']
+        world = worlds[worldID]
 
-        world.registerAgent(Agent(data['artificial'], data['id'], data['name'], data['locationID'], data['coordinates'], data['inventory']))
+        world.updateAgent(Agent(agent['artificial'], agent['id'], agent['name'], agent['locationID'], agent['coordinates'], agent['inventory']))
 
         return jsonify({
             "status": "success"
@@ -105,12 +106,13 @@ def registerAgent():
 @app.route('/registerItem', methods=['POST'])
 def registerItem():
     if request.method != 'POST':
-        data = request.get_json()  # Retrieve JSON data from the request
+        data = request.get_json()
         
-        token = data['token']
-        world = worlds[token]
+        worldID = data['worldID']
+        item = data['item']
+        world = worlds[worldID]
 
-        world.registerItem(Item(data['id'], data['name'], data['locationID'], data['coordinates']))
+        world.registerItem(Item(item['id'], item['name'], item['locationID'], item['coordinates']))
 
         return jsonify({
             "status": "success"
@@ -119,51 +121,129 @@ def registerItem():
         return jsonify({
             "status": "method does not exist"
         })
-    
-@app.route('/item', methods=['GET', 'POST', 'DELETE'])
-def item():
-    if request.method == 'GET':
-        # Handle GET request
-        data = {'message': 'This is a GET request'}
-        return jsonify(data)
 
-    elif request.method == 'POST':
-        # Handle POST request
-        posted_data = request.get_json()  # Retrieve JSON data from the request
-        data = {'message': 'This is a POST request', 'received': posted_data}
-        return jsonify(data)
-    elif request.method == 'DELETE':
-        return
-    
-@app.route('/agent', methods=['GET', 'POST', 'DELETE'])
-def agent():
-    if request.method == 'GET':
-        # Handle GET request
-        data = {'message': 'This is a GET request'}
-        return jsonify(data)
-
-    elif request.method == 'POST':
-        # Handle POST request
-        posted_data = request.get_json()  # Retrieve JSON data from the request
-        data = {'message': 'This is a POST request', 'received': posted_data}
-        return jsonify(data)
-    elif request.method == 'DELETE':
-        return
-    
-@app.route('/location', methods=['GET', 'POST', 'DELETE'])
+@app.route('/setLocation', methods=['POST'])
 def location():
-    if request.method == 'GET':
-        # Handle GET request
-        data = {'message': 'This is a GET request'}
-        return jsonify(data)
+    if request.method != 'POST':
+        data = request.get_json()
+        
+        worldID = data['worldID']
+        location = data['location']
+        world = worlds[worldID]
 
-    elif request.method == 'POST':
-        # Handle POST request
-        posted_data = request.get_json()  # Retrieve JSON data from the request
-        data = {'message': 'This is a POST request', 'received': posted_data}
-        return jsonify(data)
-    elif request.method == 'DELETE':
-        return
+        world.registerItem(Location(location['id'], location['name'], location['coordinates'], location['adjacent']))
+
+        return jsonify({
+            "status": "success"
+        })
+    else:
+        return jsonify({
+            "status": "method does not exist"
+        })
+
+@app.route('/setAgent', methods=['POST'])
+def setAgent():
+    if request.method == 'POST':
+        data = request.get_json()
+        
+        worldID = data['worldID']
+        world = worlds[worldID]
+
+        if world.updateAgent(data['agent']):
+            return jsonify({
+                "status": "success"
+            })
+        else:
+            return jsonify({
+                "status": "could not update agent"
+            })
+    else:
+        return jsonify({
+            "status": "method does not exist"
+        })
+
+@app.route('/setItem', methods=['POST'])
+def setItem():
+    if request.method != 'POST':
+        data = request.get_json()
+        
+        worldID = data['worldID']
+        world = worlds[worldID]
+
+        if world.updateItem(data['item']):
+            return jsonify({
+                "status": "success"
+            })
+        else:
+            return jsonify({
+                "status": "could not update item"
+            })
+    else:
+        return jsonify({
+            "status": "method does not exist"
+        })
+
+@app.route('/emitAction', methods=['POST'])
+def emitAction():
+    if request.method != 'POST':
+        data = request.get_json()
+        
+        worldID = data['worldID']
+        world = worlds[worldID]
+
+        agentID = data['agentID']
+        action = data['action']
+
+        if not data['actionType'] in NotificationModule.getActions():
+            return jsonify({
+                "status": "action not registered"
+            })
+
+        actionType = ActionType(data['actionType'])
+
+        if world.emitNotification(agentID, Notification(actionType, action['parameters'], descriptionStr=NotificationModule.getDescription(actionType))):
+            return jsonify({
+                "status": "success"
+            })
+        else:
+            return jsonify({
+                "status": "could not emit action"
+            })
+    else:
+        return jsonify({
+            "status": "method does not exist"
+        })
+    
+@app.route('/emitEvent', methods=['POST'])
+def emitEvent():
+    if request.method != 'POST':
+        data = request.get_json()
+        
+        worldID = data['worldID']
+        world = worlds[worldID]
+
+        sourceID = data['sourceID']
+        event = data['event']
+
+        if not data['eventType'] in NotificationModule.getEvents():
+            return jsonify({
+                "status": "action not registered"
+            })
+
+        eventType = EventType(data['eventType'])
+
+        if world.emitNotification(sourceID, Notification(eventType, event['parameters'], descriptionStr=NotificationModule.getDescription(eventType))):
+            return jsonify({
+                "status": "success"
+            })
+        else:
+            return jsonify({
+                "status": "could not emit event"
+            })
+    else:
+        return jsonify({
+            "status": "method does not exist"
+        })
 
 @app.route('/startConversation', methods=['POST'])
 def startConversation():

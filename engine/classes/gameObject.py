@@ -1,4 +1,5 @@
 import math
+import re
 
 class GameObject:
     #Initilize game object
@@ -6,6 +7,13 @@ class GameObject:
         self._id = id
         self._position = coordinates
         self._locationID = locationID
+    
+    def update(self, data: dict):
+        for attr in [attr for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")]:
+            cleanedAttr = re.sub(r'_([^_].*)', r'\g<1>', attr)
+
+            if cleanedAttr in data:
+                setattr(self, attr, data[cleanedAttr])
 
     def getID(self):
         return self._id

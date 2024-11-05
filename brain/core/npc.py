@@ -30,7 +30,7 @@ class NPC(Agent):
         self._personalityModule = personalityModule
         self._perceptionModule = PerceptionModule()
         self._motivationModule = MotivationModule(time.time(), None, longTermGoals)
-
+    
     def getBackstory(self):
         return self._backstory
 

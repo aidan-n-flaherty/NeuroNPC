@@ -45,6 +45,12 @@ class World:
 
     def getLocation(self, locationID: int):
         return self._locations[locationID] if locationID in self._locations else None
+    
+    def updateAgent(self, data: dict):
+        self._agents[data['id']].update(data)
+    
+    def updateItem(self, data: dict):
+        self._items[data['id']].update(data)
 
     def registerAgent(self, agent: Agent):
         self._agents[agent.getID()] = agent
@@ -98,7 +104,7 @@ class World:
         
         return interactable
     
-    def emitAction(self, agentID: int, notification: Notification) -> bool:
+    def emitNotification(self, agentID: int, notification: Notification) -> bool:
         description = notification.getDescription(self, agentID)
         encoding = Generator.encode(description)
 
@@ -107,6 +113,8 @@ class World:
             if aID != agentID and agent.isArtificial():
                 self._reactionQueue.append((aID, agentID, description, encoding, notification))
         self._processingLock.release_lock()
+
+        return True
     
     def tick(self):
         while len(self._reactionQueue) > 0:

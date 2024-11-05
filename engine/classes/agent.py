@@ -9,16 +9,12 @@ class Agent(GameObject):
         self._artificial = artificial
         self._inventory = inventory
         self._job = Jobs()
-    
+
     def getJob(self):
         return self._job
     
     def changeJob(self, newJob: Jobs):
         self._job = newJob
-    
-    def update(self, coordinates: tuple[float, float, float], inventory: list[int]):
-        self._position = coordinates
-        self._inventory = inventory
 
     def isArtificial(self) -> bool:
         return self._artificial
