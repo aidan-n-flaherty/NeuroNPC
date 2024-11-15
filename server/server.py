@@ -78,13 +78,16 @@ def websocket(ws):
 def emitActionToClient(agentID: int, action: Notification):
     with app.app_context():
         for client in clients:
-            client.send(json.dumps({
-                'agentID': agentID,
-                'action': {
-                    'actionType': action.getType(),
-                    'parameters': action.getParameters()
-                }
-            }) + '<|action_division|>')
+            try:
+                client.send(json.dumps({
+                    'agentID': agentID,
+                    'action': {
+                        'actionType': action.getType(),
+                        'parameters': action.getParameters()
+                    }
+                }) + '<|action_division|>')
+            except:
+                pass
 
 world = World(emitActionToClient)
 
