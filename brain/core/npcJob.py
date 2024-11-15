@@ -1,4 +1,36 @@
 from engine.enums.degree import Degree
+import random as Rand
+
+class AutoJobs():
+    #dictJobs-- Key: index and value: tuple(Jobtitle, Desc, listOfpossbile locations)
+    def __init__(self, dictJobs: dict):
+        self._dictOfAllJobs = dictJobs
+        self._numberOfJobs = len(dictJobs)
+
+    def addJob(self, jobTitle: str, jobDesc: str, listOfLocations: list[int]):
+        newValue = (jobTitle, jobDesc, listOfLocations)
+        self._dictOfAllJobs[self._numberOfJobs] = newValue
+        self._numberOfJobs = self._numberOfJobs + 1
+
+    # return 1 if succesfully removed. return 0 if no job in dict
+    def removeJob(self, jobTitle:str):
+        if jobTitle in self._dictOfAllJobs:
+            self._dictOfAllJobs.pop(jobTitle)
+            self._numberOfJobs = self._numberOfJobs - 1
+            return 1
+        else:
+            return 0
+    
+    #change the information of a job already in the dict
+    def changeJobInfo(self, jobTitle: str, jobDesc: str, listOfLocations: list[int]):
+        self.removeJob(jobTitle)
+        self.addJob(jobTitle,jobDesc,listOfLocations)
+
+    def getJobDict(self) -> dict:
+        return self._dictOfAllJobs
+    
+    def getNumJobs(self) -> int:
+        return self._numberOfJobs
 
 class Jobs():
     def __init__(self, jobTitle: str, jobDesc: str, jobLocation: list[int], jobSatisfaction: Degree, jobReward: Degree, jobRisk: Degree):
@@ -9,11 +41,37 @@ class Jobs():
         self._jobReward = jobReward             #rating from 1-7 of how much the NPC is rewarded for completing the job
         self._jobRisk = jobRisk                 #rating from 1-7 of how dangerous the job is
         self._hasJob = True
+        self._autoGiveJob = False
 
         #use degree enums for rating
     
     def __init__(self):
         self._hasJob = False
+        self._autoGiveJob = False
+        
+    #auto assign a random job from the autojob object
+    def __init__(self, autoJob: AutoJobs):
+
+        if(autoJob):
+            #give random job data
+            dictOfJobs = autoJob.getJobDict()
+            numberOfJobs = autoJob.getNumJobs()
+            jobNumber = Rand.randint(0,numberOfJobs-1)
+            jobtuple = dictOfJobs[jobNumber] # tuple formatted (jobtitle, jobdesc, possiblejoblocations)
+            self._jobTitle = jobtuple[0]
+            self._jobDesc = jobtuple[1]
+            self._jobLocation = jobtuple[2]
+            self._jobSatisfaction = Rand.randint(1,7)
+            self._jobReward = Rand.randint(1,7)
+            self._jobRisk = Rand.randint(1,7)
+            self._hasJob = True
+            self._autoGiveJob = True
+
+        else:
+           #pretend its jobless constuctor
+           self._hasJob = False
+           self._autoGiveJob = False
+            
 
     
     def getJob(self):
