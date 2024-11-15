@@ -3,6 +3,7 @@ from engine.classes.item import Item
 from engine.classes.item import ShopItem #added here by chriss - testing shop items
 from engine.classes.container import Container  #added by chris - testing containers
 from engine.classes.location import Location
+import engine.stimuli.notificationModule as NotificationModule
 from engine.stimuli.notification import Notification
 from engine.core.knowledgeBase import KnowledgeBase
 from engine.classes.assertion import Assertion
@@ -13,13 +14,14 @@ from threading import Lock
 import traceback
 
 class World:
-    def __init__(self):
+    def __init__(self, emitActionToClient):
         self._knowledgeBase = KnowledgeBase()
         self._agents = {}
         self._items = {}
         self._locations = {}
         self._reactionQueue = []
         self._processingLock = Lock()
+        self._emitActionToClient = emitActionToClient
     
     def getKnowledgeBase(self):
         return self._knowledgeBase
@@ -108,11 +110,11 @@ class World:
         description = notification.getDescription(self, agentID)
         encoding = Generator.encode(description)
 
-        self._processingLock.acquire_lock()
+        self._processingLock.acquire()
         for (aID, agent) in self._agents.items():
             if aID != agentID and agent.isArtificial():
                 self._reactionQueue.append((aID, agentID, description, encoding, notification))
-        self._processingLock.release_lock()
+        self._processingLock.release()
 
         return True
     
@@ -122,9 +124,15 @@ class World:
             agent = self._agents[agentID]
             actionAgent = self._agents[sourceID]
 
-            self._processingLock.acquire_lock()
+            self._processingLock.acquire()
             try:
-                print('\n'.join([str(a.getFunctionCall()) for a in agent.react(self, actionAgent, notification, time.time(), description, encoding)]))
+                actions = agent.react(self, actionAgent, notification, time.time(), description, encoding)
+                
+                for a in actions:
+                    if NotificationModule.shouldEmit(a.getType()):
+                        self._emitActionToClient(agentID, a)
+
+                print('\n'.join([str(a.getFunctionCall()) for a in actions]))
             except Exception:
                 print(traceback.format_exc())
-            self._processingLock.release_lock()
+            self._processingLock.release()

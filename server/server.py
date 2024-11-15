@@ -1,3 +1,5 @@
+from gevent import monkey; monkey.patch_all()
+
 import LLM.parser.parser as Parser          #This is how LLM output is parsed
 import LLM.formatter.formatter as Formatter #This is where LLM outpput is formated
 from engine.classes.agent import Agent      #This is the User
@@ -11,10 +13,16 @@ from brain.state.personality.personalityModule import PersonalityModule
 from engine.enums.degree import Degree
 from engine.stimuli.actionType import ActionType
 from engine.stimuli.eventType import EventType
-from flask import Flask, Response, request, jsonify
-from flask_sockets import Sockets
-from werkzeug.wrappers import Request, Response, ResponseStream
 import time
+from threading import Thread
+from time import sleep
+import json
+
+from flask import Flask, Response, request, jsonify
+from flask_sock import Sock
+from werkzeug.wrappers import Request, Response, ResponseStream
+
+from gevent.pywsgi import WSGIServer
 
 worlds = {}
 
@@ -42,20 +50,43 @@ class middleware():
         # return res(environ, start_response)
 
 app = Flask(__name__)
+app.config['SOCK_SERVER_OPTIONS'] = {'ping_interval': 25}
+sockets = Sock(app)
 
 app.wsgi_app = middleware(app.wsgi_app)
 
 #Register world route
 @app.route("/auth", methods=['POST'])
-def item():
+def auth():
     if request.method == 'POST':
         # Handle POST request
         posted_data = request.get_json()  # Retrieve JSON data from the request
         data = {'message': 'This is a POST request', 'received': posted_data}
         return jsonify(data)
 
+@sockets.route('/')
+def websocket(ws):
+    print('Received websocket connection')
+    clients.append(ws)
 
-world = World()
+    while True:
+        data = ws.receive()
+        if data == 'close':
+            clients.remove(ws)
+            break
+
+def emitActionToClient(agentID: int, action: Notification):
+    with app.app_context():
+        for client in clients:
+            client.send(json.dumps({
+                'agentID': agentID,
+                'action': {
+                    'actionType': action.getType(),
+                    'parameters': action.getParameters()
+                }
+            }) + '<|action_division|>')
+
+world = World(emitActionToClient)
 
 #registerItem(Item Object) -- Item Object created by: Item(int ID, string name_and_cost, int location_of_item_ID, vector coordinate)
 world.registerItem(Item(2, 'a mug of high quality beer: costs 10 gold', 5, (0, 0, 0)))
@@ -78,35 +109,16 @@ world.getAgent(1).conversationStart(world.getAgent(0))
 
 worlds[0] = world
 
-@app.route("/")
-def echo_socket(ws):
-    #Create world object
-    world = World()
+def tick():
+    while True:
+        worlds[0].tick()
+        sleep(0.01)
 
-    #registerItem(Item Object) -- Item Object created by: Item(int ID, string name_and_cost, int location_of_item_ID, vector coordinate)
-    world.registerItem(Item(2, 'a mug of beer: costs 10 gold', 5, (0, 0, 0)))
-    world.registerItem(Item(3, 'a sword: costs 50 gold', 5, (0, 0, 0)))
-    world.registerItem(Item(4, 'tax returns: unsellable', 5, (0, 0, 0)))
-    world.registerItem(Item(7, 'a pile of dog excrement', 6, (0, 0, 0)))
-    world.registerItem(Item(8, 'a pouch of gold coins', 6, (0, 0, 0)))
-    #registerAgent(Agent or NPC object) -- Agent is user. NPC is another NPC. Always give user false, and 0 ID
-    #Usage- NPC(NPC ID, (firstName string, lastName string), Location ID, (Location vector), Description for LLM, PersonalityModule() )
-    world.registerAgent(Agent(False, 0, ("John", "Doe"), 5, (0, 0, 0), []))
-    world.registerAgent(NPC(1, ("Jane", "Doe"), 5, (0, 0, 0), [2, 3, 4], "You are a tavern owner. You have 1 son named <@145>, 1 daughter named <@325>, and 1 husband named <@874>.", "You would like to make as much money as possible to support your family.", PersonalityModule(Degree.VERY_LOW, Degree.VERY_HIGH, Degree.VERY_LOW, Degree.VERY_HIGH, Degree.NEUTRAL)))
+thread = Thread(target=tick)
+thread.start()
 
-    #registerLocation(Location object)
-    #Usage- Location(locationID int, Description string, vector location, array of connected locations)
-    world.registerLocation(Location(5, "Jane's Tavern", (0, 0, 0), [6]))
-    world.registerLocation(Location(6, "Storage Closet", (1, 0, 0), [5]))
+clients = []
 
-    world.getAgent(1).conversationStart(world.getAgent(0))
-
-    #print([elem.getName() + ", " + str(elem.getParameters()) for elem in parser.parseFunctionList('attack(123)')])
-    #print([elem.getName() + ", " + str(elem.getParameters()) for elem in parser.parseFunctionList('say(\"hello there!\")')])
-    print(world.getInteractableAgents(0))
-    while not ws.closed:
-        message = ws.receive()
-        ws.send(message)
 
 @app.route('/registerAgent', methods=['POST'])
 def registerAgent():
@@ -117,7 +129,7 @@ def registerAgent():
         agent = data['agent']
         world = worlds[worldID]
 
-        world.updateAgent(Agent(agent['artificial'], agent['id'], agent['name'], agent['locationID'], agent['coordinates'], agent['inventory']))
+        world.registerAgent(Agent(agent['artificial'], agent['id'], agent['name'], agent['locationID'], agent['coordinates'], agent['inventory']))
 
         return jsonify({
             "status": "success"
@@ -155,7 +167,7 @@ def setLocation():
         location = data['location']
         world = worlds[worldID]
 
-        world.registerItem(Location(location['id'], location['name'], location['coordinates'], location['adjacent']))
+        world.registerLocation(Location(location['id'], location['name'], location['coordinates'], location['adjacent']))
 
         return jsonify({
             "status": "success"
@@ -218,12 +230,12 @@ def emitAction():
         agentID = data['agentID']
         action = data['action']
 
-        if not data['actionType'] in NotificationModule.getActions():
+        if not action['actionType'] in NotificationModule.getActions():
             return jsonify({
                 "status": "action not registered"
             })
 
-        actionType = ActionType(data['actionType'])
+        actionType = ActionType(action['actionType'])
 
         if world.emitNotification(agentID, Notification(actionType, action['parameters'], descriptionStr=NotificationModule.getDescription(actionType))):
             return jsonify({
@@ -249,12 +261,12 @@ def emitEvent():
         sourceID = data['sourceID']
         event = data['event']
 
-        if not data['eventType'] in NotificationModule.getEvents():
+        if not event['eventType'] in NotificationModule.getEvents():
             return jsonify({
                 "status": "action not registered"
             })
 
-        eventType = EventType(data['eventType'])
+        eventType = EventType(event['eventType'])
 
         if world.emitNotification(sourceID, Notification(eventType, event['parameters'], descriptionStr=NotificationModule.getDescription(eventType))):
             return jsonify({
@@ -286,7 +298,4 @@ def startConversation():
 
 
 if __name__ == '__main__':
-    from gevent import pywsgi
-    from geventwebsocket.handler import WebSocketHandler
-    server = pywsgi.WSGIServer(('', 8080), app, handler_class=WebSocketHandler)
-    server.serve_forever()
+    WSGIServer(('', 8080), app).serve_forever()

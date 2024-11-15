@@ -114,7 +114,7 @@ def isEphemeral(notificationType: ActionType | EventType):
     return supportedNotifications[notificationType].hasTag("EPHEMERAL")
 
 def shouldEmit(notificationType: ActionType | EventType):
-    return supportedNotifications[notificationType].hasTag("EMIT")
+    return supportedNotifications[notificationType].hasTag("EMITTED")
 
 def isHostile(notificationType: ActionType | EventType):
     return supportedNotifications[notificationType].hasClassification("HOSTILE")
