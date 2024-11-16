@@ -2,7 +2,8 @@ import LLM.parser.parser as Parser          #This is how LLM output is parsed
 import LLM.formatter.formatter as Formatter #This is where LLM outpput is formated
 from engine.classes.agent import Agent      #This is the User
 from brain.core.npc import NPC              #This is the NPC
-from brain.core.npcJob import Jobs
+from brain.core.npcJob import Jobs          #NPC Jobs Object
+from brain.core.npcJob import AutoJobs      #npc that holds alot of jobs and can auto give the jobs
 from engine.core.world import World         #This is where KnowledgeBases, NPCS, Items, locations are initiated
 from engine.stimuli.notification import Notification
 import engine.stimuli.notificationModule as NotificationModule
@@ -40,12 +41,29 @@ world.registerAgent(NPC(1, ("Jane", "Doe"), 5, (0, 0, 0), [2, 3, 4, 9, 10], "You
 #registerLocation(Location object)
 #Usage- Location(locationID int, Description string, vector location, array of connected locations)
 world.registerLocation(Location(5, "Jane's Tavern", (0, 0, 0), [6]))
-world.registerLocation(Location(6, "Storage Closet", (1, 0, 0), [5]))
+world.registerLocation(Location(6, "Storage Closet", (1, 0, 0), [5,11]))
+world.registerLocation(Location(11, "Coal Mine", (2, 0, 0), [6]))
 
-job1 = Jobs()
+unemployed = Jobs() #give this to agents that are unemployed
 
+coal_mine_worker = Jobs("Coal Miner","Works in the local coal mine for 12 hours a day",[11],Degree.VERY_LOW,Degree.ABOVE_AVERAGE,Degree.VERY_HIGH)
 
-world.getAgent(1).changeJob(job1)
+emptyDict = dict()
+dictOfAllJobs = dict()  #dict of a bunch of jobs. Key: number Index, Value: Tuple
+dictOfAllJobs[0] = ("Coal Miner","Works in the local coal mine for 12 hours a day",[11])
+
+autoJobsTest1 = AutoJobs(dictOfAllJobs) #First autoJob test object
+
+autoJobsTest2 = AutoJobs(emptyDict)     #secound autoJob test Object
+autoJobsTest2.addJob("Coal Miner","Works in the local coal mine for 12 hours a day",[11])
+
+# these are both autojob objects with one job
+
+randomJob1 = Jobs(autoJobsTest1)    #first test to see if a job was auto assigned
+randomJob2 = Jobs(autoJobsTest2)    #secound test to see if a job was auto assigned
+
+#input job into the changeJob function to see if it works
+world.getAgent(1).changeJob(unemployed)
 
 world.getAgent(1).conversationStart(world.getAgent(0))
 
