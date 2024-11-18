@@ -53,4 +53,4 @@ function_a(argumentA, argumentB)
 function_b(argumentC)
 ...
 
-Your first action should be plan(...). Make sure that the subsequent actions align with your plan. Make sure that your personality and emotions highly influence your actions.
+Make sure that your personality and emotions highly influence your actions.

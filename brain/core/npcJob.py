@@ -50,7 +50,7 @@ class Jobs():
         self._autoGiveJob = False
         
     #auto assign a random job from the autojob object
-    def __init__(self, autoJob: AutoJobs):
+    def __init__(self, autoJob: AutoJobs=None):
 
         if(autoJob):
             #give random job data
