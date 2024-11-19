@@ -33,7 +33,7 @@ class AutoJobs():
         return self._numberOfJobs
 
 class Jobs():
-    def __init__(self, jobTitle: str, jobDesc: str, jobLocation: list[int], jobSatisfaction: Degree, jobReward: Degree, jobRisk: Degree):
+    def __init__(self, jobTitle: str=None, jobDesc: str=None, jobLocation: list[int]=None, jobSatisfaction: Degree=None, jobReward: Degree=None, jobRisk: Degree=None):
         self._jobTitle = jobTitle               #title of job
         self._jobDesc = jobDesc                 #short description of what the job is
         self._jobLocation = jobLocation         #List of Location ID of where the job happens
