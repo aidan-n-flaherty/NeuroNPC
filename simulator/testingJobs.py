@@ -37,7 +37,7 @@ world.registerItem(Item(8, 'a pouch of gold coins', 11, (0, 0, 0)))
 #Usage- NPC(NPC ID, (firstName string, lastName string), Location ID, (Location vector), Description for LLM, PersonalityModule() )
 world.registerAgent(Agent(False, 0, ("John", "Doe"), 5, (0, 0, 0), []))
 world.registerAgent(NPC(1, ("Jane", "Doe"), 5, (0, 0, 0), [2, 3, 4, 9, 10], "You are a tavern owner. You have 1 son named <@145>, 1 daughter named <@325>, and 1 husband named <@874>.", "You would like to make as much money as possible to support your family.", PersonalityModule({ "kind": Degree.HIGH, "pacifist": Degree.VERY_HIGH, "funny": Degree.HIGH, "weird": Degree.ABOVE_AVERAGE }, [ ], [ ])))
-
+world.registerAgent(NPC(13, ("John", "Doe"), 5, (0, 0, 0), [2, 3, 4, 9, 10], "You are the husband of the tavern owner.", "You would like to make as much money as possible to support your family.", PersonalityModule({ "kind": Degree.HIGH, "pacifist": Degree.VERY_HIGH, "funny": Degree.HIGH, "weird": Degree.ABOVE_AVERAGE }, [ ], [ ])))
 #registerLocation(Location object)
 #Usage- Location(locationID int, Description string, vector location, array of connected locations)
 world.registerLocation(Location(5, "Jane's Tavern", (0, 0, 0), [6]))
@@ -51,11 +51,13 @@ coal_mine_worker = Jobs("Coal Miner","Works in the local coal mine for 12 hours 
 emptyDict = dict()
 dictOfAllJobs = dict()  #dict of a bunch of jobs. Key: number Index, Value: Tuple
 dictOfAllJobs[0] = ("Coal Miner","Works in the local coal mine for 12 hours a day",[11])
+dictOfAllJobs[1] = ("Coal Mine Manager","Manages the coal mine workers for 8 hours a day",[11])
 
 autoJobsTest1 = AutoJobs(dictOfAllJobs) #First autoJob test object
 
 autoJobsTest2 = AutoJobs(emptyDict)     #secound autoJob test Object
 autoJobsTest2.addJob("Coal Miner","Works in the local coal mine for 12 hours a day",[11])
+autoJobsTest2.addJob("Coal Mine Manager","Manages the coal mine workers for 8 hours a day",[11])
 
 # these are both autojob objects with one job
 
@@ -63,7 +65,9 @@ randomJob1 = Jobs(autoJobsTest1)    #first test to see if a job was auto assigne
 randomJob2 = Jobs(autoJobsTest2)    #secound test to see if a job was auto assigned
 
 #input job into the changeJob function to see if it works
+#either put in unemployed, randomJob1, or randomJob2
 world.getAgent(1).changeJob(unemployed)
+world.getAgent(13).changeJob(randomJob1)
 
 world.getAgent(1).conversationStart(world.getAgent(0))
 
