@@ -33,25 +33,8 @@ class AutoJobs():
         return self._numberOfJobs
 
 class Jobs():
-    def __init__(self, jobTitle: str=None, jobDesc: str=None, jobLocation: list[int]=None, jobSatisfaction: Degree=None, jobReward: Degree=None, jobRisk: Degree=None):
-        self._jobTitle = jobTitle               #title of job
-        self._jobDesc = jobDesc                 #short description of what the job is
-        self._jobLocation = jobLocation         #List of Location ID of where the job happens
-        self._jobSatisfaction = jobSatisfaction #rating from 1-7 of how happy the NPC is with the job
-        self._jobReward = jobReward             #rating from 1-7 of how much the NPC is rewarded for completing the job
-        self._jobRisk = jobRisk                 #rating from 1-7 of how dangerous the job is
-        self._hasJob = True
-        self._autoGiveJob = False
-
-        #use degree enums for rating
-    
-    def __init__(self):
-        self._hasJob = False
-        self._autoGiveJob = False
+    def __init__(self, jobTitle: str=None, jobDesc: str=None, jobLocation: list[int]=None, jobSatisfaction: Degree=None, jobReward: Degree=None, jobRisk: Degree=None, autoJob:AutoJobs=None):
         
-    #auto assign a random job from the autojob object
-    def __init__(self, autoJob: AutoJobs=None):
-
         if(autoJob):
             #give random job data
             dictOfJobs = autoJob.getJobDict()
@@ -66,12 +49,19 @@ class Jobs():
             self._jobRisk = Rand.randint(1,7)
             self._hasJob = True
             self._autoGiveJob = True
-
         else:
-           #pretend its jobless constuctor
-           self._hasJob = False
-           self._autoGiveJob = False
-            
+            if(jobTitle):
+                self._jobTitle = jobTitle               #title of job
+                self._jobDesc = jobDesc                 #short description of what the job is
+                self._jobLocation = jobLocation         #List of Location ID of where the job happens
+                self._jobSatisfaction = jobSatisfaction #rating from 1-7 of how happy the NPC is with the job
+                self._jobReward = jobReward             #rating from 1-7 of how much the NPC is rewarded for completing the job
+                self._jobRisk = jobRisk                 #rating from 1-7 of how dangerous the job is
+                self._hasJob = True
+                self._autoGiveJob = False
+            else:
+                self._hasJob = False
+                self._autoGiveJob = False
 
     
     def getJob(self):
