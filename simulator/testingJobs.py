@@ -17,8 +17,11 @@ from engine.stimuli.actionType import ActionType
 from threading import Thread
 from time import sleep
 
+def emitActionToClient():
+    pass
+
 #Create world onject
-world = World()
+world = World(emitActionToClient)
 
 #registerItem(Item Object) -- Item Object created by: Item(int ID, string name_and_cost, int location_of_item_ID, vector coordinate)
 world.registerShopItem(ShopItem(2, 'a mug of beer', 10, 5, (0, 0, 0)))
