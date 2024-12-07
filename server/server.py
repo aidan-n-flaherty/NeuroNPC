@@ -13,6 +13,7 @@ from brain.state.personality.personalityModule import PersonalityModule
 from engine.enums.degree import Degree
 from engine.stimuli.actionType import ActionType
 from engine.stimuli.eventType import EventType
+from engine.types.agentID import AgentID
 import time
 from threading import Thread
 from time import sleep
@@ -93,23 +94,22 @@ def emitActionToClient(agentID: int, action: Notification):
 world = World(emitActionToClient)
 
 #registerItem(Item Object) -- Item Object created by: Item(int ID, string name_and_cost, int location_of_item_ID, vector coordinate)
-world.registerItem(Item(2, 'a mug of high quality beer: costs 10 gold', 5, (0, 0, 0)))
-world.registerItem(Item(9, 'a mug of low quality disgusting beer: costs 10 gold', 5, (0, 0, 0)))
-world.registerItem(Item(3, 'a sword: costs 50 gold', 5, (0, 0, 0)))
-world.registerItem(Item(4, 'tax returns: unsellable', 5, (0, 0, 0)))
-world.registerItem(Item(7, 'a pile of dog excrement', 6, (0, 0, 0)))
-world.registerItem(Item(8, 'a pouch of gold coins', 6, (0, 0, 0)))
+#world.registerItem(Item(2, 'a mug of high quality beer: costs 10 gold', 5, (0, 0, 0)))
+#world.registerItem(Item(9, 'a mug of low quality disgusting beer: costs 10 gold', 5, (0, 0, 0)))
+#world.registerItem(Item(3, 'a sword: costs 50 gold', 5, (0, 0, 0)))
+#world.registerItem(Item(4, 'tax returns: unsellable', 5, (0, 0, 0)))
+#world.registerItem(Item(7, 'a pile of dog excrement', 6, (0, 0, 0)))
+#world.registerItem(Item(8, 'a pouch of gold coins', 6, (0, 0, 0)))
 #registerAgent(Agent or NPC object) -- Agent is user. NPC is another NPC. Always give user false, and 0 ID
 #Usage- NPC(NPC ID, (firstName string, lastName string), Location ID, (Location vector), Description for LLM, PersonalityModule() )
-world.registerAgent(Agent(False, 0, ("John", "Doe"), 5, (0, 0, 0), []))
-world.registerAgent(NPC(1, ("Jane", "Doe"), 5, (0, 0, 0), [2, 3, 4, 9], "You are a tavern owner. You have 1 son named <@145>, 1 daughter named <@325>, and 1 husband named <@874>.", "You would like to make as much money as possible to support your family.", PersonalityModule({ "kind": Degree.HIGH, "pacifist": Degree.VERY_HIGH, "funny": Degree.HIGH, "weird": Degree.ABOVE_AVERAGE }, [ "That's what my grandma always says!", "Exterminate the heathens!", "Cool beans!" ], [ "oops", "hehe", "howdy", "cool" ])))
+#world.registerAgent(Agent(False, 0, ("John", "Doe"), 5, (0, 0, 0), []))
+#world.registerAgent(NPC(1, ("Jane", "Doe"), 5, (0, 0, 0), [2, 3, 4, 9], "You are a tavern owner. You have 1 son named <@145>, 1 daughter named <@325>, and 1 husband named <@874>.", "You would like to make as much money as possible to support your family.", PersonalityModule({ "kind": Degree.HIGH, "pacifist": Degree.VERY_HIGH, "funny": Degree.HIGH, "weird": Degree.ABOVE_AVERAGE }, [ "That's what my grandma always says!", "Exterminate the heathens!", "Cool beans!" ], [ "oops", "hehe", "howdy", "cool" ])))
 
 #registerLocation(Location object)
 #Usage- Location(locationID int, Description string, vector location, array of connected locations)
-world.registerLocation(Location(5, "Jane's Tavern", (0, 0, 0), [6]))
-world.registerLocation(Location(6, "Storage Closet", (1, 0, 0), [5]))
+world.registerLocation(Location(0, "Jane's Tavern", (0, 0, 0), []))
 
-world.getAgent(1).conversationStart(world.getAgent(0))
+#world.getAgent(1).conversationStart(world.getAgent(0))
 
 worlds[0] = world
 
@@ -133,7 +133,20 @@ def registerAgent():
         agent = data['agent']
         world = worlds[worldID]
 
-        world.registerAgent(Agent(agent['artificial'], agent['id'], agent['name'], agent['locationID'], agent['coordinates'], agent['inventory']))
+        if world.getAgent(agent['id']):
+            if world.updateAgent(agent):
+                return jsonify({
+                    "status": "success"
+                })
+            else:
+                return jsonify({
+                    "status": "could not update agent"
+                })
+
+        if agent['artificial']:
+            world.registerAgent(NPC(agent['id'], agent['name'], agent['locationID'], agent['coordinates'], agent['inventory'], "You are a tavern owner. You have 1 son named <@145>, 1 daughter named <@325>, and 1 husband named <@874>.", "You would like to make as much money as possible to support your family.", PersonalityModule({ "kind": Degree.HIGH, "pacifist": Degree.VERY_HIGH, "funny": Degree.HIGH, "weird": Degree.ABOVE_AVERAGE }, [ "That's what my grandma always says!", "Exterminate the heathens!", "Cool beans!" ], [ "oops", "hehe", "howdy", "cool" ])))
+        else:
+            world.registerAgent(Agent(agent['artificial'], agent['id'], agent['name'], agent['locationID'], agent['coordinates'], agent['inventory']))
 
         return jsonify({
             "status": "success"
@@ -151,6 +164,16 @@ def registerItem():
         worldID = data['worldID']
         item = data['item']
         world = worlds[worldID]
+
+        if world.getItem(item['id']):
+            if world.updateItem(item):
+                return jsonify({
+                    "status": "success"
+                })
+            else:
+                return jsonify({
+                    "status": "could not update agent"
+                })
 
         world.registerItem(Item(item['id'], item['name'], item['locationID'], item['coordinates']))
 
@@ -241,7 +264,13 @@ def emitAction():
 
         actionType = ActionType(action['actionType'])
 
-        if world.emitNotification(agentID, Notification(actionType, action['parameters'], descriptionStr=NotificationModule.getDescription(actionType))):
+        parameters = []
+        types = NotificationModule.getParameterTypes(actionType)
+
+        for i in range(len(action['parameters'])):
+            parameters.append(types[i](action['parameters'][i]))
+        
+        if world.emitNotification(agentID, Notification(actionType, parameters, descriptionStr=NotificationModule.getDescription(actionType))):
             return jsonify({
                 "status": "success"
             })

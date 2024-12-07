@@ -31,6 +31,9 @@ class BehaviorModule:
 
     def isConversing(self):
         return not self._conversingWith is None
+
+    def isConversingWith(self, agentID: int):
+        return self._conversingWith == agentID
     
     def getReplacements(self):
         return [(AgentID, "self"), (AgentID, "caller"), (ItemID, "caller"), (None, "_")]
@@ -113,7 +116,7 @@ class BehaviorModule:
         return self._policies
 
     def getReaction(self, selfAgent: Agent, personalityModule: PersonalityModule, perceptionModule: PerceptionModule, agent: Agent, notification: Notification) -> Notification:
-        if agent is None or (NotificationModule.shouldEmit(notification.getType()) and any([issubclass(type(param), AgentID) and param == selfAgent.getID() for param in notification.getParameters()])):
+        if agent is None or (NotificationModule.shouldEmit(notification.getType()) and any([(issubclass(type(param), AgentID) or isinstance(param, AgentID)) and param == selfAgent.getID() for param in notification.getParameters()])):
             return Notification(ActionType("recalculate"))
         
         for policyStr in self._policies:

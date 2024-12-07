@@ -13,8 +13,12 @@ from engine.stimuli.actionType import ActionType
 from threading import Thread
 from time import sleep
 
+
+def emitActionToClient(agentID: int, agent):
+    pass
+
 #Create world onject
-world = World()
+world = World(emitActionToClient)
 
 #registerItem(Item Object) -- Item Object created by: Item(int ID, string name_and_cost, int location_of_item_ID, vector coordinate)
 world.registerItem(Item(2, 'a mug of high quality beer: costs 10 gold', 5, (0, 0, 0)))
@@ -58,6 +62,6 @@ while True:
     except:
         action = Notification(ActionType("say"), [Formatter.formatTags(user, world)], "", NotificationModule.getDescription(ActionType("say")))
     
-    world.emitAction(0, action)
+    world.emitNotification(0, action)
 
 

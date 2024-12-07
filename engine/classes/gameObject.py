@@ -27,6 +27,13 @@ class GameObject:
     def setPosition(self, position):
         self._position = position
     
+    def distance(self, other: 'GameObject'):
+        dX = other._position[0] - self._position[0]
+        dY = other._position[1] - self._position[1]
+        dZ = other._position[2] - self._position[2]
+
+        return math.sqrt(dX * dX + dY * dY + dZ * dZ)
+    
     def canInteract(self, other: 'GameObject'):
         dX = other._position[0] - self._position[0]
         dY = other._position[1] - self._position[1]

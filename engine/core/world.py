@@ -5,6 +5,7 @@ from engine.classes.container import Container  #added by chris - testing contai
 from engine.classes.location import Location
 import engine.stimuli.notificationModule as NotificationModule
 from engine.stimuli.notification import Notification
+from engine.stimuli.actionType import ActionType
 from engine.core.knowledgeBase import KnowledgeBase
 from engine.classes.assertion import Assertion
 import LLM.generator.generator as Generator
@@ -109,6 +110,27 @@ class World:
     def emitNotification(self, agentID: int, notification: Notification) -> bool:
         description = notification.getDescription(self, agentID)
         encoding = Generator.encode(description)
+
+        if notification.getType() == ActionType('say'):
+            found = False
+
+            for (_, a) in self._agents.items():
+                if a.isArtificial() and a.isConversingWith(agentID):
+                    found = True
+                    break
+
+            if not found:
+                agent = self.getAgent(agentID)
+                closest = -1
+                closestAgent = None
+
+                for (_, a) in self._agents.items():
+                    if a.isArtificial() and (closest < 0 or agent.distance(a) < closest):
+                        closest = agent.distance(a)
+                        closestAgent = a
+            
+                if closestAgent:
+                    closestAgent.conversationStart(agent)
 
         self._processingLock.acquire()
         for (aID, agent) in self._agents.items():

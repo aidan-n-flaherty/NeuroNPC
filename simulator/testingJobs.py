@@ -17,7 +17,7 @@ from engine.stimuli.actionType import ActionType
 from threading import Thread
 from time import sleep
 
-def emitActionToClient():
+def emitActionToClient(agentID: int, agent):
     pass
 
 #Create world onject
@@ -64,8 +64,8 @@ autoJobsTest2.addJob("Coal Mine Manager","Manages the coal mine workers for 8 ho
 
 # these are both autojob objects with one job
 
-randomJob1 = Jobs(autoJobsTest1)    #first test to see if a job was auto assigned
-randomJob2 = Jobs(autoJobsTest2)    #secound test to see if a job was auto assigned
+randomJob1 = Jobs(autoJob=autoJobsTest1)    #first test to see if a job was auto assigned
+randomJob2 = Jobs(autoJob=autoJobsTest2)    #secound test to see if a job was auto assigned
 
 #input job into the changeJob function to see if it works
 #either put in unemployed, randomJob1, or randomJob2
@@ -93,6 +93,6 @@ while True:
     except:
         action = Notification(ActionType("say"), [Formatter.formatTags(user, world)], "", NotificationModule.getDescription(ActionType("say"))) #turn user action into A notification object
     
-    world.emitAction(0, action) #send to every NPC
+    world.emitNotification(0, action) #send to every NPC
 
 

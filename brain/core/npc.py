@@ -42,6 +42,9 @@ class NPC(Agent):
     
     def conversationEnd(self):
         self._behaviorModule.stopConversing()
+    
+    def isConversingWith(self, agentID: int):
+        return self._behaviorModule.isConversingWith(agentID)
 
     def shareInformation(self, npc: 'NPC'):
         self._perceptionModule.exchange(npc._perceptionModule)
@@ -133,11 +136,11 @@ class NPC(Agent):
                 mentalFunctionDescriptions="\n".join(["{}: {}".format(NotificationModule.getFunctionStr(action), NotificationModule.getDocumentation(action)) for action in NotificationModule.getMentalActions()]), \
                 history=Formatter.formatHistory(self.getID(), self._memoryModule.getSummary(), self._memoryModule.getObserved()), \
                 emotions=str(self._emotionModule), \
-                functionList=", ".join(NotificationModule.getActions()), \
+                functionList=", ".join([action for action in NotificationModule.getActions() if not Grammar.grammarMissing(action, world, self.getID())]), \
                 inventory='[{}]'.format(', '.join([world.getItem(itemID).getIdentifier() for itemID in self.getInventory()])), \
                 jobs= '{}'.format(self.getJob().getIdentifier()),
-                agents=', '.join([self._perceptionModule.getPerceptionStr(agentID) for agentID in world.getInteractableAgents(self.getID())]) if world.getInteractableAgents(self.getID()) else "There is no one in your current location. If you were interacting with a user previously, you must return to your previous location to interact with them again.", \
-                objects='[{}]'.format(', '.join([world.getItem(itemID).getIdentifier() for itemID in world.getInteractableItems(self.getID())])), \
+                agents='\n'.join([self._perceptionModule.getPerceptionStr(agentID) for agentID in world.getInteractableAgents(self.getID())]) if world.getInteractableAgents(self.getID()) else "There is no one in your current location. If you were interacting with a user previously, you must return to your previous location to interact with them again.", \
+                objects='[{}]'.format(', '.join([world.getItem(itemID).getIdentifier() for itemID in world.getInteractableItems(self.getID()) if not itemID in self.getInventory()])), \
                 currentLocation=world.getLocation(self.getLocationID()).getIdentifier(), \
                 adjacentLocations='[{}]'.format(', '.join([world.getLocation(locationID).getIdentifier() for locationID in world.getAccessibleLocations(self.getID())])), \
                 personality=str(self._personalityModule))
