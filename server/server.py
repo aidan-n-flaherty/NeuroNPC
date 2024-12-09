@@ -113,6 +113,7 @@ world.registerLocation(Location(0, "Jane's Tavern", (0, 0, 0), []))
 
 worlds[0] = world
 
+#Used to parse through the world action queue to handle multithreading. Will eventually get rid of
 def tick():
     while True:
         worlds[0].tick()
