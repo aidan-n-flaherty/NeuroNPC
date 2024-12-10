@@ -113,14 +113,14 @@ world.registerLocation(Location(0, "Jane's Tavern", (0, 0, 0), []))
 
 worlds[0] = world
 
-#Used to parse through the world action queue to handle multithreading. Will eventually get rid of
-def tick():
-    while True:
-        worlds[0].tick()
-        sleep(0.01)
+# Commented out to easily switch back to tick
+# def tick():
+#     while True:
+#         worlds[0].tick()
+#         sleep(0.01)
 
-thread = Thread(target=tick)
-thread.start()
+# thread = Thread(target=tick)
+# thread.start()
 
 clients = []
 
