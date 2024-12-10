@@ -41,3 +41,6 @@ class Agent(GameObject):
     
     def getIdentifier(self) -> str:
         return '<@{id}>'.format(id=self.getID())
+
+    def react():
+        raise NotImplementedError("The react method is unimplemented for the agent class. Make sure to use a subclass like NPC when emitting a notification")
