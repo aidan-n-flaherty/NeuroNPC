@@ -132,29 +132,36 @@ class World:
                 if closestAgent:
                     closestAgent.conversationStart(agent)
 
+        #To-do: make FIFO queue
         self._processingLock.acquire()
-        for (aID, agent) in self._agents.items():
-            if aID != agentID and agent.isArtificial():
-                self._reactionQueue.append((aID, agentID, description, encoding, notification))
+        actionAgent = self._agents[agentID]
+        actions = agent.react(self, actionAgent,notification, time.time(), description, encoding)   
+        for a in actions:
+            if NotificationModule.shouldEmit(a.getType()):
+                self._emitActionToClient(agentID, a)
+        print('\n'.join([str(a.getFunctionCall()) for a in actions]))
+        # for (aID, agent) in self._agents.items():
+        #     if aID != agentID and agent.isArtificial():
+        #         self._reactionQueue.append((aID, agentID, description, encoding, notification))
         self._processingLock.release()
 
         return True
     
-    def tick(self):
-        while len(self._reactionQueue) > 0:
-            agentID, sourceID, description, encoding, notification = self._reactionQueue.pop(0)
-            agent = self._agents[agentID]
-            actionAgent = self._agents[sourceID]
+    # def tick(self):
+    #     while len(self._reactionQueue) > 0:
+    #         agentID, sourceID, description, encoding, notification = self._reactionQueue.pop(0)
+    #         agent = self._agents[agentID]
+    #         actionAgent = self._agents[sourceID]
 
-            self._processingLock.acquire()
-            try:
-                actions = agent.react(self, actionAgent, notification, time.time(), description, encoding)
+    #         self._processingLock.acquire()
+    #         try:
+    #             actions = agent.react(self, actionAgent, notification, time.time(), description, encoding)
                 
-                for a in actions:
-                    if NotificationModule.shouldEmit(a.getType()):
-                        self._emitActionToClient(agentID, a)
+    #             for a in actions:
+    #                 if NotificationModule.shouldEmit(a.getType()):
+    #                     self._emitActionToClient(agentID, a)
 
-                print('\n'.join([str(a.getFunctionCall()) for a in actions]))
-            except Exception:
-                print(traceback.format_exc())
-            self._processingLock.release()
+    #             print('\n'.join([str(a.getFunctionCall()) for a in actions]))
+    #         except Exception:
+    #             print(traceback.format_exc())
+    #         self._processingLock.release()
